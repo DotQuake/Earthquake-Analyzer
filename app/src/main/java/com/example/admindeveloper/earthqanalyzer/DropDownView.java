@@ -12,6 +12,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.admindeveloper.earthqanalyzer.CompassPage.CompassPageView;
+import com.example.admindeveloper.earthqanalyzer.LoadDataPage.LoadDataView;
+import com.example.admindeveloper.earthqanalyzer.RealTimePage.RealTimeView;
+
 public class DropDownView extends AppCompatActivity
 
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -75,7 +79,7 @@ public class DropDownView extends AppCompatActivity
         Fragment fragment = null;
 
         //initializing the fragment object which is selected
-        /*switch (itemId) {
+        switch (itemId) {
             case R.id.nav_orientation:
                 fragment = new CompassPageView();
                 break;
@@ -85,7 +89,7 @@ public class DropDownView extends AppCompatActivity
             case R.id.nav_realtime:
                 fragment = new RealTimeView();
                 break;
-        }*/
+        }
 
         //replacing the fragment
         if (fragment != null) {
