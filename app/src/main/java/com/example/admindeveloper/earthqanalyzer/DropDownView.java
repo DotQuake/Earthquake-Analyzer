@@ -38,7 +38,7 @@ public class DropDownView extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //displaySelectedScreen(R.id.nav_orientation);
+        displaySelectedScreen(R.id.nav_orientation);
     }
 
     @Override
