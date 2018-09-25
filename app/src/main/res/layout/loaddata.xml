@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/loadbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="82dp"
+        android:text="load data" />
+
+    <EditText
+        android:id="@+id/filenametx"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="26dp"
+        android:ems="10"
+        android:hint="File Name"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/multilinetx"
+        android:layout_width="325dp"
+        android:layout_height="297dp"
+        android:layout_alignEnd="@+id/loadbtn"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="-110dp"
+        android:layout_marginTop="188dp"
+        android:ems="10"
+        android:inputType="textMultiLine" />
+
+</RelativeLayout>
