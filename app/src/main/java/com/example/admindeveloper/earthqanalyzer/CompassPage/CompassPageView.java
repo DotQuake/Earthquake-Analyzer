@@ -26,7 +26,7 @@ public class CompassPageView extends Fragment implements SensorEventListener {
     private SensorManager mSensorManager;
     TextView mcompass;
 
-    //CompassPageController cpc;
+    CompassPageController cpc;
 
     public RotateAnimation displayAnimation(float degree, float currentdegree, ImageView image){
         RotateAnimation ra = new RotateAnimation(currentdegree,-degree, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
@@ -42,7 +42,7 @@ public class CompassPageView extends Fragment implements SensorEventListener {
         myView = inflater.inflate(R.layout.orientation,container,false);
         mcompass = (TextView) myView.findViewById(R.id.tvcompass);
         image = (ImageView) myView.findViewById(R.id.imview);
-        //cpc = new CompassPageController();
+        cpc = new CompassPageController();
         return myView;
     }
 
@@ -60,7 +60,7 @@ public class CompassPageView extends Fragment implements SensorEventListener {
         if(event.sensor.getType() == Sensor.TYPE_ORIENTATION) {
             // get the angle around the z-axis rotated
             degree = Math.round(event.values[0]);
-            //cpc.setDegree(degree);
+            cpc.setDegree(degree);
             image.startAnimation(displayAnimation(degree,currentdegree,image));
             currentdegree = -degree;
 

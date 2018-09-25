@@ -110,7 +110,6 @@ public class LoadDataView extends Fragment
             FileInputStream fin =new FileInputStream(file);
             InputStreamReader inputStream = new InputStreamReader(fin);
             BufferedReader bufferedReader = new BufferedReader(inputStream);
-            StringBuilder stringBuilder = new StringBuilder();
             String line = null;
             bufferedReader.readLine();
             while ((line= bufferedReader.readLine())!=null){
