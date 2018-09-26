@@ -28,11 +28,34 @@ public class CompassPageView extends Fragment implements SensorEventListener {
 
     CompassPageController cpc;
 
-    public RotateAnimation displayAnimation(float degree, float currentdegree, ImageView image){
+    private RotateAnimation displayAnimation(float degree, float currentdegree, ImageView image){
         RotateAnimation ra = new RotateAnimation(currentdegree,-degree, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
         ra.setDuration(210);
         ra.setFillAfter(true);
         return ra;
+    }
+    private void displayDirectionText(){
+        String where = "NO";
+        degree = cpc.getDegree();
+
+        if (degree >= 338 || degree <= 23)
+            where = "N";
+        if (degree < 338 && degree > 293)
+            where = "NW";
+        if (degree <= 293 && degree > 248)
+            where = "W";
+        if (degree <= 248 && degree > 180)
+            where = "SW";
+        if (degree <= 180 && degree > 157)
+            where = "S";
+        if (degree <= 157 && degree > 112)
+            where = "SE";
+        if (degree <= 112 && degree > 68)
+            where = "E";
+        if (degree <= 68 && degree > 23)
+            where = "NE";
+
+        mcompass.setText("Heading: " + Float.toString(degree) + " degrees   " + where);
     }
 
 
@@ -55,35 +78,15 @@ public class CompassPageView extends Fragment implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        String where = "NO";
+
 
         if(event.sensor.getType() == Sensor.TYPE_ORIENTATION) {
             // get the angle around the z-axis rotated
-            degree = Math.round(event.values[0]);
-            cpc.setDegree(degree);
-            image.startAnimation(displayAnimation(degree,currentdegree,image));
-            currentdegree = -degree;
+            cpc.setDegree(Math.round(event.values[0]));
+            image.startAnimation(displayAnimation(cpc.getDegree(),currentdegree,image));
+            currentdegree = -cpc.getDegree();
 
-
-            if (degree >= 338 || degree <= 23)
-                where = "N";
-            if (degree < 338 && degree > 293)
-                where = "NW";
-            if (degree <= 293 && degree > 248)
-                where = "W";
-            if (degree <= 248 && degree > 180)
-                where = "SW";
-            if (degree <= 180 && degree > 157)
-                where = "S";
-            if (degree <= 157 && degree > 112)
-                where = "SE";
-            if (degree <= 112 && degree > 68)
-                where = "E";
-            if (degree <= 68 && degree > 23)
-                where = "NE";
-
-
-            mcompass.setText("Heading: " + Float.toString(degree) + " degrees   " + where);
+            displayDirectionText();
         }
     }
 

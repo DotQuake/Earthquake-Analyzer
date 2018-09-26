@@ -16,7 +16,4 @@ public class CompassPageController {
         return deviceTurned;
     }
 
-    public void setDeviceTurned(boolean deviceTurned) {
-        this.deviceTurned = deviceTurned;
-    }
 }

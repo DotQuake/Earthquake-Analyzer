@@ -104,7 +104,7 @@ public class LoadDataView extends Fragment
         try {
             File myDir = new File(Environment.getExternalStorageDirectory()+"/SoftEng");
             myDir.mkdir();
-            File file = new File(myDir,fileName.getText().toString());
+            File file = new File(myDir,fileName.getText().toString()+".csv");
             //File file = new File(Environment.getExternalStorageDirectory(),filename.getText().toString());
 
             FileInputStream fin =new FileInputStream(file);

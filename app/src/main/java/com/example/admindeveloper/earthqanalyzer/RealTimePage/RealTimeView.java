@@ -34,20 +34,19 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class RealTimeView extends Fragment implements SensorEventListener {
     LineDataSet set1;
     LineDataSet set2;
     LineDataSet set3;
 
+
     public LineChart rawDataGraph;
     public TextView hypocenterBox;
     public TextView directionBox;
     public Button saveDataBtn, recordDataBtn;
     TextView timeBox;
+    boolean result;
     //-------------------------------
     View myView;
     private SensorManager mSensorManager;
@@ -55,16 +54,12 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     private Thread thread;
     private boolean plotData = true;
 
-    long yourmilliseconds ;
+    //long yourmilliseconds ;
     SimpleDateFormat sdf ;
-    Date resultdate ;
+    //Date resultdate ;
 
     boolean recordflag = false;
-    public List<Float> x_values ;
-    public List<Float> y_values ;
-    public List<Float> z_values ;
-    public List<String> time_values;
-    int index=0;
+   // public List<String> time_values;
     RealTimeController rtc;
     EditText filename;
     //-------------------------------
@@ -74,15 +69,12 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     public void displaydirectionBox(float degree){
 
     }
-    public void displaySaveResult(boolean result){
-
-    }
     // IMPLEMENTED -------------------------------------
     public void saveDataBtnClick(){
         String file = filename.getText().toString();
         if(!file.equals("")) {
             Toast.makeText(getActivity(),"Saved",Toast.LENGTH_SHORT).show();
-            rtc.saveData(file, x_values, y_values, z_values, time_values);
+            rtc.saveData(file);
         }
 
     }
@@ -91,39 +83,15 @@ public class RealTimeView extends Fragment implements SensorEventListener {
             recordflag = false;
             Toast.makeText(getActivity(),"Record Stopped", Toast.LENGTH_SHORT).show();
             recordDataBtn.setText("Start Recording");
+
         }else {
             recordflag = true;
             Toast.makeText(getActivity(),"Record Start", Toast.LENGTH_SHORT).show();
             recordDataBtn.setText("Stop Recording");
         }
-    }
-    private void displayTime() {
-        /*Thread th = new Thread(new Runnable() {
-            private long startTime = System.currentTimeMillis();
-            public void run() {
-                while (true) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
 
-                            yourmilliseconds = System.currentTimeMillis();
-                            sdf = new SimpleDateFormat("HH:mm:ss:SSS");
-                            resultdate = new Date(yourmilliseconds);
-                            timeBox.setText(""+sdf.format(resultdate));
-
-                        }
-                    });
-                    try {
-                        Thread.sleep(1);
-                    }
-                    catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        th.start();*/
     }
+
     private void smooththread() {
 
         if (thread != null){
@@ -149,127 +117,6 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         thread.start();
     }
     private void setup(){
-        //----------------------------------------------------------------------------
-        set1 = new LineDataSet(null, "X");
-        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set1.setLineWidth(3f);
-        set1.setColor(Color.MAGENTA);
-        set1.setHighlightEnabled(false);
-        set1.setDrawValues(false);
-        set1.setDrawCircles(false);
-        set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        set1.setCubicIntensity(0.2f);
-        //----------------------------------------------------------------------------
-        //----------------------------------------------------------------------------
-        set2 = new LineDataSet(null, "Y");
-        set2.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set2.setLineWidth(3f);
-        set2.setColor(Color.BLACK);
-        set2.setHighlightEnabled(false);
-        set2.setDrawValues(false);
-        set2.setDrawCircles(false);
-        set2.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        set2.setCubicIntensity(0.2f);
-        //----------------------------------------------------------------------------
-        //----------------------------------------------------------------------------
-        set3 = new LineDataSet(null, "Z");
-        set3.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set3.setLineWidth(3f);
-        set3.setColor(Color.BLUE);
-        set3.setHighlightEnabled(false);
-        set3.setDrawValues(false);
-        set3.setDrawCircles(false);
-        set3.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        set3.setCubicIntensity(0.2f);
-        //----------------------------------------------------------------------------
-    }
-    private void displayRawDataGraph(SensorEvent event) {
-        LineData data = rawDataGraph.getData();
-
-        if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            mX.setText(Float.toString(event.values[0]));
-            mY.setText(Float.toString(event.values[1]));
-            mZ.setText(Float.toString((float)(event.values[2]-9.5)));
-            if (data != null) {
-
-                ILineDataSet setx = data.getDataSetByIndex(0);
-                ILineDataSet sety = data.getDataSetByIndex(1);
-                ILineDataSet setz = data.getDataSetByIndex(2);
-
-                // set.addEntry(...); // can be called as well
-
-                if (setx == null) {
-                    setx = set1;
-                    data.addDataSet(setx);
-                }
-                if (sety == null) {
-                    sety = set2;
-                    data.addDataSet(sety);
-                }
-                if (setz == null) {
-                    setz = set3;
-                    data.addDataSet(setz);
-                }
-
-                data.addEntry(new Entry(setx.getEntryCount(), event.values[0]), 0);
-                data.addEntry(new Entry(sety.getEntryCount(), event.values[1]), 1);
-                data.addEntry(new Entry(setz.getEntryCount(), (float) (event.values[2] - 9.5)), 2);
-                data.notifyDataChanged();
-
-                // let the chart know it's data has changed
-                rawDataGraph.notifyDataSetChanged();
-
-                // limit the number of visible entries
-                rawDataGraph.setVisibleXRangeMaximum(150);
-                // rawDataGraph.setVisibleYRange(30, AxisDependency.LEFT);
-
-                // move to the latest entry
-                rawDataGraph.moveViewToX(data.getEntryCount());
-
-            }
-        }
-    }
-    //-----------------------------------------------------------------------------------------------------
-
-
-
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        myView = inflater.inflate(R.layout.realtime,container,false);
-        rawDataGraph = (LineChart) myView.findViewById(R.id.chart1);
-        mX = (TextView) myView.findViewById(R.id.tvx);
-        mY = (TextView) myView.findViewById(R.id.tvy);
-        mZ = (TextView) myView.findViewById(R.id.tvz);
-        timeBox = (TextView) myView.findViewById(R.id.mstx);
-        filename = (EditText) myView.findViewById(R.id.filenametx);
-        x_values = new ArrayList<>();
-        y_values = new ArrayList<>();
-        z_values = new ArrayList<>();
-        time_values = new ArrayList<>();
-        recordDataBtn = (Button) myView.findViewById(R.id.recordbt);
-        saveDataBtn = (Button) myView.findViewById(R.id.savebt);
-        rtc = new RealTimeController();
-
-        recordDataBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                recordDataBtnClick();
-            }
-        });
-        saveDataBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveDataBtnClick();
-            }
-        });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1000);
-        }
-
-
         // enable description text
         rawDataGraph.getDescription().setEnabled(true);
         rawDataGraph.getDescription().setText("Real Time Accelerometer Data Plot ( X , Y , Z )");
@@ -320,6 +167,129 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         rawDataGraph.getAxisLeft().setDrawGridLines(false);
         rawDataGraph.getXAxis().setDrawGridLines(false);
         rawDataGraph.setDrawBorders(false);
+        //----------------------------------------------------------------------------
+        set1 = new LineDataSet(null, "X");
+        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set1.setLineWidth(1f);
+        set1.setColor(Color.MAGENTA);
+        set1.setHighlightEnabled(false);
+        set1.setDrawValues(false);
+        set1.setDrawCircles(false);
+        set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set1.setCubicIntensity(0.2f);
+        //----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
+        set2 = new LineDataSet(null, "Y");
+        set2.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set2.setLineWidth(1f);
+        set2.setColor(Color.BLACK);
+        set2.setHighlightEnabled(false);
+        set2.setDrawValues(false);
+        set2.setDrawCircles(false);
+        set2.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set2.setCubicIntensity(0.2f);
+        //----------------------------------------------------------------------------
+        //----------------------------------------------------------------------------
+        set3 = new LineDataSet(null, "Z");
+        set3.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set3.setLineWidth(1f);
+        set3.setColor(Color.BLUE);
+        set3.setHighlightEnabled(false);
+        set3.setDrawValues(false);
+        set3.setDrawCircles(false);
+        set3.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set3.setCubicIntensity(0.2f);
+        //----------------------------------------------------------------------------
+    }
+    private void displayRawDataGraph(SensorEvent event) {
+        LineData data = rawDataGraph.getData();
+
+        if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            rtc.updateXYZ(event.values[0],event.values[1],event.values[2]);
+            mX.setText(Float.toString(rtc.getX()));
+            mY.setText(Float.toString(rtc.getY()));
+            mZ.setText(Float.toString(rtc.getZ()));
+               if (recordflag) {
+                rtc.recordData();
+            //time_values.add(index++,sdf.format(resultdate));
+            //rawtimemilis.add(index++,yourmilliseconds);
+              }
+
+            if (data != null) {
+
+                ILineDataSet setx = data.getDataSetByIndex(0);
+                ILineDataSet sety = data.getDataSetByIndex(1);
+                ILineDataSet setz = data.getDataSetByIndex(2);
+
+                // set.addEntry(...); // can be called as well
+
+                if (setx == null) {
+                    setx = set1;
+                    data.addDataSet(setx);
+                }
+                if (sety == null) {
+                    sety = set2;
+                    data.addDataSet(sety);
+                }
+                if (setz == null) {
+                    setz = set3;
+                    data.addDataSet(setz);
+                }
+
+                data.addEntry(new Entry(setx.getEntryCount(), rtc.getX()), 0);
+                data.addEntry(new Entry(sety.getEntryCount(), rtc.getY()), 1);
+                data.addEntry(new Entry(setz.getEntryCount(), rtc.getZ()), 2);
+                data.notifyDataChanged();
+
+                // let the chart know it's data has changed
+                rawDataGraph.notifyDataSetChanged();
+
+                // limit the number of visible entries
+                rawDataGraph.setVisibleXRangeMaximum(200);
+                // rawDataGraph.setVisibleYRange(30, AxisDependency.LEFT);
+
+                // move to the latest entry
+                rawDataGraph.moveViewToX(data.getEntryCount());
+
+            }
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------
+
+
+
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        myView = inflater.inflate(R.layout.realtime,container,false);
+        rawDataGraph = (LineChart) myView.findViewById(R.id.chart1);
+        mX = (TextView) myView.findViewById(R.id.tvx);
+        mY = (TextView) myView.findViewById(R.id.tvy);
+        mZ = (TextView) myView.findViewById(R.id.tvz);
+        timeBox = (TextView) myView.findViewById(R.id.mstx);
+        filename = (EditText) myView.findViewById(R.id.filenametx);
+        //time_values = new ArrayList<>();
+        recordDataBtn = (Button) myView.findViewById(R.id.recordbt);
+        saveDataBtn = (Button) myView.findViewById(R.id.savebt);
+        rtc = new RealTimeController();
+
+        recordDataBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                recordDataBtnClick();
+            }
+        });
+        saveDataBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saveDataBtnClick();
+            }
+        });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1000);
+        }
 
 
 
@@ -334,7 +304,9 @@ public class RealTimeView extends Fragment implements SensorEventListener {
             }
         });
         builder.show();
-        displayTime();
+
+
+        //displayTime();
         smooththread();
         setup();
         return myView;
@@ -365,17 +337,13 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+
+
             if (plotData) {
                 displayRawDataGraph(event);
                 plotData = false;
             }
-            if (recordflag) {
-                x_values.add(index, event.values[0]);
-                y_values.add(index, event.values[1]);
-                z_values.add(index, event.values[2]);
-                //time_values.add(index++,sdf.format(resultdate));
-                //rawtimemilis.add(index++,yourmilliseconds);
-            }
+
         }
 
     }
@@ -426,5 +394,33 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         super.onDestroyView();
     }
     //-----------------------------------------------------------------------------------------------------
+
+    /*private void displayTime() {
+        Thread th = new Thread(new Runnable() {
+            private long startTime = System.currentTimeMillis();
+            public void run() {
+                while (true) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            yourmilliseconds = System.currentTimeMillis();
+                            sdf = new SimpleDateFormat("HH:mm:ss:SSS");
+                            resultdate = new Date(yourmilliseconds);
+                            timeBox.setText(""+sdf.format(resultdate));
+
+                        }
+                    });
+                    try {
+                        Thread.sleep(1);
+                    }
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        th.start();
+    }*/
 
 }
