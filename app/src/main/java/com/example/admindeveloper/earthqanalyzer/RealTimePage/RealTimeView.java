@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -23,22 +22,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.admindeveloper.earthqanalyzer.DisplayGraph;
 import com.example.admindeveloper.earthqanalyzer.R;
+import com.example.admindeveloper.earthqanalyzer.RecordSaveDataXYZ;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.text.SimpleDateFormat;
 
 public class RealTimeView extends Fragment implements SensorEventListener {
-    LineDataSet set1;
-    LineDataSet set2;
-    LineDataSet set3;
 
 
     public LineChart rawDataGraph;
@@ -62,6 +53,8 @@ public class RealTimeView extends Fragment implements SensorEventListener {
    // public List<String> time_values;
     RealTimeController rtc;
     EditText filename;
+    DisplayGraph dg;
+    RecordSaveDataXYZ rsdata;
     //-------------------------------
     public void displayHypocenterBox(float distance){
 
@@ -74,7 +67,7 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         String file = filename.getText().toString();
         if(!file.equals("")) {
             Toast.makeText(getActivity(),"Saved",Toast.LENGTH_SHORT).show();
-            rtc.saveData(file);
+            rsdata.saveData(file);
         }
 
     }
@@ -91,7 +84,6 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         }
 
     }
-
     private void smooththread() {
 
         if (thread != null){
@@ -116,93 +108,7 @@ public class RealTimeView extends Fragment implements SensorEventListener {
 
         thread.start();
     }
-    private void setup(){
-        // enable description text
-        rawDataGraph.getDescription().setEnabled(true);
-        rawDataGraph.getDescription().setText("Real Time Accelerometer Data Plot ( X , Y , Z )");
-
-        // enable touch gestures
-        rawDataGraph.setTouchEnabled(false);
-
-        // enable scaling and dragging
-        rawDataGraph.setDragEnabled(false);
-        rawDataGraph.setScaleEnabled(false);
-        rawDataGraph.setDrawGridBackground(false);
-
-        // if disabled, scaling can be done on x- and y-axis separately
-        rawDataGraph.setPinchZoom(false);
-
-        // set an alternative background color
-        rawDataGraph.setBackgroundColor(Color.WHITE);
-
-        LineData data = new LineData();
-        data.setValueTextColor(Color.BLACK);
-
-        // add empty data
-        rawDataGraph.setData(data);
-
-        // get the legend (only possible after setting data)
-        Legend l = rawDataGraph.getLegend();
-
-        // modify the legend ...
-        l.setForm(Legend.LegendForm.LINE);
-        l.setTextColor(Color.BLACK);
-
-        XAxis xl = rawDataGraph.getXAxis();
-        xl.setTextColor(Color.WHITE);
-        xl.setDrawGridLines(true);
-        xl.setAvoidFirstLastClipping(true);
-        xl.setEnabled(true);
-
-        YAxis leftAxis = rawDataGraph.getAxisLeft();
-        leftAxis.setTextColor(Color.BLACK);
-        leftAxis.setDrawGridLines(false);
-        leftAxis.setAxisMaximum(1f);
-        leftAxis.setAxisMinimum(-1f);
-        leftAxis.setDrawGridLines(true);
-
-        YAxis rightAxis = rawDataGraph.getAxisRight();
-        rightAxis.setEnabled(false);
-
-        rawDataGraph.getAxisLeft().setDrawGridLines(false);
-        rawDataGraph.getXAxis().setDrawGridLines(false);
-        rawDataGraph.setDrawBorders(false);
-        //----------------------------------------------------------------------------
-        set1 = new LineDataSet(null, "X");
-        set1.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set1.setLineWidth(1f);
-        set1.setColor(Color.MAGENTA);
-        set1.setHighlightEnabled(false);
-        set1.setDrawValues(false);
-        set1.setDrawCircles(false);
-        set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        set1.setCubicIntensity(0.2f);
-        //----------------------------------------------------------------------------
-        //----------------------------------------------------------------------------
-        set2 = new LineDataSet(null, "Y");
-        set2.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set2.setLineWidth(1f);
-        set2.setColor(Color.BLACK);
-        set2.setHighlightEnabled(false);
-        set2.setDrawValues(false);
-        set2.setDrawCircles(false);
-        set2.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        set2.setCubicIntensity(0.2f);
-        //----------------------------------------------------------------------------
-        //----------------------------------------------------------------------------
-        set3 = new LineDataSet(null, "Z");
-        set3.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set3.setLineWidth(1f);
-        set3.setColor(Color.BLUE);
-        set3.setHighlightEnabled(false);
-        set3.setDrawValues(false);
-        set3.setDrawCircles(false);
-        set3.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        set3.setCubicIntensity(0.2f);
-        //----------------------------------------------------------------------------
-    }
     private void displayRawDataGraph(SensorEvent event) {
-        LineData data = rawDataGraph.getData();
 
         if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             rtc.updateXYZ(event.values[0],event.values[1],event.values[2]);
@@ -210,50 +116,13 @@ public class RealTimeView extends Fragment implements SensorEventListener {
             mY.setText(Float.toString(rtc.getY()));
             mZ.setText(Float.toString(rtc.getZ()));
                if (recordflag) {
-                rtc.recordData();
+                rsdata.recordData(rtc.getX(),rtc.getY(),rtc.getZ());
             //time_values.add(index++,sdf.format(resultdate));
             //rawtimemilis.add(index++,yourmilliseconds);
               }
-
-            if (data != null) {
-
-                ILineDataSet setx = data.getDataSetByIndex(0);
-                ILineDataSet sety = data.getDataSetByIndex(1);
-                ILineDataSet setz = data.getDataSetByIndex(2);
-
-                // set.addEntry(...); // can be called as well
-
-                if (setx == null) {
-                    setx = set1;
-                    data.addDataSet(setx);
-                }
-                if (sety == null) {
-                    sety = set2;
-                    data.addDataSet(sety);
-                }
-                if (setz == null) {
-                    setz = set3;
-                    data.addDataSet(setz);
-                }
-
-                data.addEntry(new Entry(setx.getEntryCount(), rtc.getX()), 0);
-                data.addEntry(new Entry(sety.getEntryCount(), rtc.getY()), 1);
-                data.addEntry(new Entry(setz.getEntryCount(), rtc.getZ()), 2);
-                data.notifyDataChanged();
-
-                // let the chart know it's data has changed
-                rawDataGraph.notifyDataSetChanged();
-
-                // limit the number of visible entries
-                rawDataGraph.setVisibleXRangeMaximum(200);
-                // rawDataGraph.setVisibleYRange(30, AxisDependency.LEFT);
-
-                // move to the latest entry
-                rawDataGraph.moveViewToX(data.getEntryCount());
-
+              dg.displayRawDataGraph(rtc.getX(),rtc.getY(),rtc.getZ(),rawDataGraph);
             }
         }
-    }
     //-----------------------------------------------------------------------------------------------------
 
 
@@ -273,6 +142,8 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         recordDataBtn = (Button) myView.findViewById(R.id.recordbt);
         saveDataBtn = (Button) myView.findViewById(R.id.savebt);
         rtc = new RealTimeController();
+        dg = new DisplayGraph();
+        rsdata = new RecordSaveDataXYZ();
 
         recordDataBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -308,7 +179,7 @@ public class RealTimeView extends Fragment implements SensorEventListener {
 
         //displayTime();
         smooththread();
-        setup();
+        dg.setup(rawDataGraph);
         return myView;
     }
 
@@ -337,8 +208,6 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
         if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-
-
             if (plotData) {
                 displayRawDataGraph(event);
                 plotData = false;
