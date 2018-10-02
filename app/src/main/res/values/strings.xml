@@ -5,4 +5,6 @@
     <string name="nav_header_title">Earthquake Analyzer</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="load">Load</string>
+    <string name="textview">TextView</string>
 </resources>
