@@ -20,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,7 +53,6 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     boolean recordflag = false;
    // public List<String> time_values;
     RealTimeController rtc;
-    EditText filename;
     DisplayGraph dg;
     RecordSaveDataXYZ rsdata;
     //-------------------------------
@@ -143,7 +141,6 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         mY = (TextView) myView.findViewById(R.id.tvy);
         mZ = (TextView) myView.findViewById(R.id.tvz);
         timeBox = (TextView) myView.findViewById(R.id.mstx);
-        filename = (EditText) myView.findViewById(R.id.filenametx);
         //time_values = new ArrayList<>();
         recordDataBtn = (Button) myView.findViewById(R.id.recordbt);
         saveDataBtn = (Button) myView.findViewById(R.id.savebt);

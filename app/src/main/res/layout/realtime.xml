@@ -97,15 +97,4 @@
         android:layout_alignTop="@+id/savebt"
         android:text="Start Recording" />
 
-    <EditText
-        android:id="@+id/filenametx"
-        android:layout_width="167dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/savebt"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="43dp"
-        android:ems="10"
-        android:hint="File Name"
-        android:inputType="textPersonName" />
-
 </RelativeLayout>
