@@ -24,6 +24,7 @@ import com.example.admindeveloper.earthqanalyzer.CSVFileDecoder;
 import com.example.admindeveloper.earthqanalyzer.CompassPage.CompassPageController;
 import com.example.admindeveloper.earthqanalyzer.DisplayGraph;
 import com.example.admindeveloper.earthqanalyzer.EarthQuakeDataClass;
+import com.example.admindeveloper.earthqanalyzer.MediaRescan;
 import com.example.admindeveloper.earthqanalyzer.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.jaiselrahman.filepicker.activity.FilePickerActivity;
@@ -78,6 +79,7 @@ public class LoadDataView extends Fragment implements SensorEventListener
         senSensorManager = (SensorManager) this.getActivity().getSystemService(Context.SENSOR_SERVICE);
     }
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -98,9 +100,9 @@ public class LoadDataView extends Fragment implements SensorEventListener
             }
         });
         ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+        MediaRescan mr = new MediaRescan();
         return myView;
     }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
