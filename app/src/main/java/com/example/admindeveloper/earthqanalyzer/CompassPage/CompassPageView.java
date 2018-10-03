@@ -1,6 +1,7 @@
 package com.example.admindeveloper.earthqanalyzer.CompassPage;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -54,7 +55,13 @@ public class CompassPageView extends Fragment implements SensorEventListener {
             where = "E";
         if (degree <= 68 && degree > 23)
             where = "NE";
-
+        if(cpc.getComputedDegree()>degree-24&&cpc.getComputedDegree()<degree+24) {
+            mcompass.setTextColor(Color.RED);
+        }
+        else
+        {
+            mcompass.setTextColor(Color.BLACK);
+        }
         mcompass.setText("Heading: " + Float.toString(degree) + " degrees   " + where);
     }
 

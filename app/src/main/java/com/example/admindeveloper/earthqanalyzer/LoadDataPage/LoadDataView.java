@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.text.method.MovementMethod;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.admindeveloper.earthqanalyzer.CSVFileDecoder;
 import com.example.admindeveloper.earthqanalyzer.DisplayGraph;
 import com.example.admindeveloper.earthqanalyzer.EarthQuakeDataClass;
 import com.example.admindeveloper.earthqanalyzer.R;
@@ -37,6 +39,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.jaiselrahman.filepicker.activity.FilePickerActivity;
 import com.jaiselrahman.filepicker.config.Configurations;
 import com.jaiselrahman.filepicker.model.MediaFile;
+//import com.nbsp.materialfilepicker.MaterialFilePicker;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,6 +49,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class LoadDataView extends Fragment implements SensorEventListener
 {
@@ -61,54 +65,6 @@ public class LoadDataView extends Fragment implements SensorEventListener
     public TextView directionBox;
     public TextView debugBox;
     DisplayGraph dG=new DisplayGraph();
-    public void displayRawDataGraph(ArrayList<Float> x,ArrayList<Float> y,ArrayList<Float> z)
-    {
-        LineDataSet lineX,lineY,lineZ;
-        //--------------------------------------------
-        lineX = new LineDataSet(null, "X");
-        lineX.setAxisDependency(YAxis.AxisDependency.LEFT);
-        lineX.setLineWidth(3f);
-        lineX.setColor(Color.MAGENTA);
-        lineX.setHighlightEnabled(false);
-        lineX.setDrawValues(false);
-        lineX.setDrawCircles(false);
-        lineX.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        lineX.setCubicIntensity(0.2f);
-        //--------------------------------------------
-        lineY = new LineDataSet(null, "Y");
-        lineY.setAxisDependency(YAxis.AxisDependency.LEFT);
-        lineY.setLineWidth(3f);
-        lineY.setColor(Color.BLACK);
-        lineY.setHighlightEnabled(false);
-        lineY.setDrawValues(false);
-        lineY.setDrawCircles(false);
-        lineY.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        lineY.setCubicIntensity(0.2f);
-        //--------------------------------------------
-        lineZ = new LineDataSet(null, "Z");
-        lineZ.setAxisDependency(YAxis.AxisDependency.LEFT);
-        lineZ.setLineWidth(3f);
-        lineZ.setColor(Color.BLUE);
-        lineZ.setHighlightEnabled(false);
-        lineZ.setDrawValues(false);
-        lineZ.setDrawCircles(false);
-        lineZ.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        lineZ.setCubicIntensity(0.2f);
-        //--------------------------------------------
-        for(int count=0;count<x.size();count++)
-        {
-            lineX.addEntry(new Entry(count,x.get(count)));
-            lineY.addEntry(new Entry(count,y.get(count)));
-            lineZ.addEntry(new Entry(count,z.get(count)));
-        }
-        LineData lData=new LineData();
-        lData.addDataSet(lineX);
-        lData.addDataSet(lineY);
-        lData.addDataSet(lineZ);
-        rawDataGraph.setData(lData);
-        rawDataGraph.notifyDataSetChanged();
-        rawDataGraph.invalidate();
-    }
     public void displayHypocenterBox(float distance)
     {
         hypocenterBox.setText("Hypocenter: "+distance);
@@ -147,7 +103,6 @@ public class LoadDataView extends Fragment implements SensorEventListener
                 .build());
         startActivityForResult(intent, FILE_REQUEST_CODE);
     }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -163,12 +118,13 @@ public class LoadDataView extends Fragment implements SensorEventListener
         loadDatabtn =  myView.findViewById(R.id.loadButton);
         rawDataGraph=myView.findViewById(R.id.rawDataChart);
         dG.setup(rawDataGraph);
-        debugBox=myView.findViewById(R.id.debugView);
-        debugBox.setMovementMethod(new ScrollingMovementMethod());
+        //debugBox=myView.findViewById(R.id.debugView);
+        //debugBox.setMovementMethod(new ScrollingMovementMethod());
         loadDatabtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openDocumentOpener(view);
+                //OpenDocumentOpener2();
             }
         });
         ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
@@ -182,11 +138,13 @@ public class LoadDataView extends Fragment implements SensorEventListener
         {
             case FILE_REQUEST_CODE:
             {
+                dG.clearData(rawDataGraph);
                 ArrayList<MediaFile> files = data.getParcelableArrayListExtra(FilePickerActivity.MEDIA_FILES);
                 MediaFile file=files.get(0);
                 if(file.getMediaType()==MediaFile.TYPE_FILE)
                 {
-                    this.data=LoadDataController.decodeCSVFile(file);
+                    this.data= CSVFileDecoder.decodeCSVFile(file);
+                    hypocenterBox.setText(file.getPath());
                 }
                 if(this.data!=null) {
                     for(int count=0;count<this.data.getEHZ().size();count++) {

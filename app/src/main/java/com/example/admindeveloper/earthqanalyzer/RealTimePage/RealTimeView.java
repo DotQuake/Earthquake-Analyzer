@@ -9,8 +9,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaScannerConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -64,11 +66,15 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     }
     // IMPLEMENTED -------------------------------------
     public void saveDataBtnClick(){
-        String file = filename.getText().toString();
-        if(!file.equals("")) {
+        //String file = filename.getText().toString();
+        rsdata.saveEarthquakeData("unknown",100);
+        MediaScannerConnection.scanFile(getActivity(), new String[] {Environment.getExternalStorageDirectory().getPath()+"/Samples"}, null, null);
+        Toast.makeText(getActivity(),"Saved",Toast.LENGTH_SHORT).show();
+       /* if(!file.equals("")) {
             Toast.makeText(getActivity(),"Saved",Toast.LENGTH_SHORT).show();
-            rsdata.saveData(file);
-        }
+            //rsdata.saveData(file);
+
+        }*/
 
     }
     public void recordDataBtnClick(){

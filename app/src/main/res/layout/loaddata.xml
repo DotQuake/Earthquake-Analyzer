@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
     <com.github.mikephil.charting.charts.LineChart
@@ -11,10 +12,10 @@
         android:id="@+id/loadButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/rawDataChart"
-        android:text="@string/load"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="49dp"
+        android:text="@string/load" />
 
     <TextView
         android:id="@+id/hypocenter"
@@ -22,11 +23,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="191dp"
-        android:layout_marginStart="33dp"
+        android:layout_marginBottom="203dp"
+        android:layout_marginStart="22dp"
         android:text="@string/textview"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="33dp" />
+        android:layout_marginLeft="22dp" />
 
     <TextView
         android:id="@+id/direction"
@@ -34,18 +35,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/hypocenter"
-        android:layout_marginBottom="151dp"
+        android:layout_marginBottom="136dp"
         android:text="@string/textview"
         android:layout_alignLeft="@+id/hypocenter" />
 
-    <TextView
-        android:id="@+id/debugView"
-        android:layout_width="match_parent"
-        android:layout_height="137dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="1dp"
-        android:scrollbars="vertical"
-        android:text="@string/textview"
-        android:layout_alignParentLeft="true" />
+
 </RelativeLayout>

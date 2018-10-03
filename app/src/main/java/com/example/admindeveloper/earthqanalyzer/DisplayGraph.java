@@ -16,6 +16,14 @@ public class DisplayGraph {
     LineDataSet set1;
     LineDataSet set2;
     LineDataSet set3;
+    public void clearData(LineChart rawDataGraph)
+    {
+        set1.clear();
+        set2.clear();
+        set3.clear();
+        rawDataGraph.invalidate();
+        rawDataGraph.notifyDataSetChanged();
+    }
 
     public void displayRawDataGraph(float x , float y ,float z, LineChart rawDataGraph) {
         LineData data = rawDataGraph.getData();
