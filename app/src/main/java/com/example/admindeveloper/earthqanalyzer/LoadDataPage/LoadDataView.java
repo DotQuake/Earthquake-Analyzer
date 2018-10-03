@@ -3,53 +3,36 @@ package com.example.admindeveloper.earthqanalyzer.LoadDataPage;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.support.v4.app.Fragment;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
-import android.text.method.MovementMethod;
-import android.text.method.ScrollingMovementMethod;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.admindeveloper.earthqanalyzer.CSVFileDecoder;
+import com.example.admindeveloper.earthqanalyzer.CompassPage.CompassPageController;
 import com.example.admindeveloper.earthqanalyzer.DisplayGraph;
 import com.example.admindeveloper.earthqanalyzer.EarthQuakeDataClass;
 import com.example.admindeveloper.earthqanalyzer.R;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.jaiselrahman.filepicker.activity.FilePickerActivity;
 import com.jaiselrahman.filepicker.config.Configurations;
 import com.jaiselrahman.filepicker.model.MediaFile;
-//import com.nbsp.materialfilepicker.MaterialFilePicker;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
+
+//import com.nbsp.materialfilepicker.MaterialFilePicker;
 
 public class LoadDataView extends Fragment implements SensorEventListener
 {
@@ -58,6 +41,7 @@ public class LoadDataView extends Fragment implements SensorEventListener
     EarthQuakeDataClass data;
     LoadDataController controller;
     SensorManager senSensorManager;
+    CompassPageController cpc;
     float compassDegree;
     public final int FILE_REQUEST_CODE=0;
     public LineChart rawDataGraph;
@@ -72,22 +56,7 @@ public class LoadDataView extends Fragment implements SensorEventListener
     public void displayDirectionBox(float degree)
     {
         String where=null;
-        if (degree >= 338 || degree <= 23)
-            where = "N";
-        if (degree < 338 && degree > 293)
-            where = "NW";
-        if (degree <= 293 && degree > 248)
-            where = "W";
-        if (degree <= 248 && degree > 180)
-            where = "SW";
-        if (degree <= 180 && degree > 157)
-            where = "S";
-        if (degree <= 157 && degree > 112)
-            where = "SE";
-        if (degree <= 112 && degree > 68)
-            where = "E";
-        if (degree <= 68 && degree > 23)
-            where = "NE";
+        where = cpc.getDirection(degree);
         directionBox.setText("Direction: "+where);
     }
     public void openDocumentOpener(View view){
@@ -117,6 +86,7 @@ public class LoadDataView extends Fragment implements SensorEventListener
         directionBox=myView.findViewById(R.id.direction);
         loadDatabtn =  myView.findViewById(R.id.loadButton);
         rawDataGraph=myView.findViewById(R.id.rawDataChart);
+        cpc = new CompassPageController();
         dG.setup(rawDataGraph);
         //debugBox=myView.findViewById(R.id.debugView);
         //debugBox.setMovementMethod(new ScrollingMovementMethod());
