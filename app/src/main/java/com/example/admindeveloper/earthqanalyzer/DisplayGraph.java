@@ -33,7 +33,6 @@ public class DisplayGraph {
                 ILineDataSet setx = data.getDataSetByIndex(0);
                 ILineDataSet sety = data.getDataSetByIndex(1);
                 ILineDataSet setz = data.getDataSetByIndex(2);
-
                 // set.addEntry(...); // can be called as well
 
                 if (setx == null) {
@@ -107,8 +106,8 @@ public class DisplayGraph {
         YAxis leftAxis = rawDataGraph.getAxisLeft();
         leftAxis.setTextColor(Color.BLACK);
         leftAxis.setDrawGridLines(false);
-        leftAxis.setAxisMaximum(1f);
-        leftAxis.setAxisMinimum(-1f);
+        leftAxis.setAxisMaximum(5f);
+        leftAxis.setAxisMinimum(-2f);
         leftAxis.setDrawGridLines(true);
 
         YAxis rightAxis = rawDataGraph.getAxisRight();

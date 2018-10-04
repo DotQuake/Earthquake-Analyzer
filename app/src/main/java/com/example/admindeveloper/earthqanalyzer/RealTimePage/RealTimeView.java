@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.admindeveloper.earthqanalyzer.DisplayGraph;
+import com.example.admindeveloper.earthqanalyzer.EarthquakeAnalyzer;
 import com.example.admindeveloper.earthqanalyzer.MediaRescan;
 import com.example.admindeveloper.earthqanalyzer.R;
 import com.example.admindeveloper.earthqanalyzer.RecordSaveDataXYZ;
@@ -49,11 +50,11 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     TextView mX,mY,mZ;
     private Thread thread;
     private boolean plotData = true;
-
+    TextView status;
     //long yourmilliseconds ;
     SimpleDateFormat sdf ;
     //Date resultdate ;
-
+    EarthquakeAnalyzer ea;
     boolean recordflag = false;
    // public List<String> time_values;
     RealTimeController rtc;
@@ -123,7 +124,21 @@ public class RealTimeView extends Fragment implements SensorEventListener {
             //time_values.add(index++,sdf.format(resultdate));
             //rawtimemilis.add(index++,yourmilliseconds);
               }
-              dg.displayRawDataGraph(rtc.getX(),rtc.getY(),rtc.getZ(),rawDataGraph);
+            String result=ea.detectEarthquake(rtc.getX(),rtc.getY(),rtc.getZ());
+            if(ea.getStatus()=="DETERMINEPW")
+            {
+                recordflag=true;
+            }
+            else if(ea.getStatus()=="EARTHQUAKEDETECTED")
+            {
+
+            }
+            Float[] val=ea.getAverageOfSamples();
+            if(result!=null)
+            {
+                Toast.makeText(getActivity(),"Earthquake Detected",Toast.LENGTH_LONG);
+            }
+              dg.displayRawDataGraph(val[0],rtc.getX(),0,rawDataGraph);
             }
         }
     //-----------------------------------------------------------------------------------------------------
@@ -146,7 +161,7 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         rtc = new RealTimeController();
         dg = new DisplayGraph();
         rsdata = new RecordSaveDataXYZ();
-
+        status=myView.findViewById(R.id.mstx);
         recordDataBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -178,7 +193,7 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         });
         builder.show();
 
-
+        ea=new EarthquakeAnalyzer((float)0.3,100,(float)0.1);
         //displayTime();
         smooththread();
         dg.setup(rawDataGraph);

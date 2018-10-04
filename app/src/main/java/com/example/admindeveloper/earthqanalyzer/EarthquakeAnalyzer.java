@@ -1,12 +1,169 @@
 package com.example.admindeveloper.earthqanalyzer;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-public class EarthquakeAnalyzer {
+public class EarthquakeAnalyzer{
+    private float SWThreshold;
+    private float PWThreshold;
+    private float highestRecordThreshold;
+    private int maxNumberOfSamples;
+    private ArrayList<Float> x;
+    private ArrayList<Float> y;
+    private ArrayList<Float> z;
+    private String status;
+    private Date startDate;
+    private Date endDate;
+    private float startX;
+    private float startY;
+    private float startZ;
+    private float difference;
+    private boolean startSampling;
+    private boolean earthquakeDetected;
+
+    public void setPWThreshold(float PWThreshold)
+    {this.PWThreshold=PWThreshold;return;}
+    public float getPWThreshold()
+    {return this.PWThreshold;}
+    public void setMaxNumberOfSamples(int maxNumberOfSamples)
+    {this.maxNumberOfSamples=maxNumberOfSamples;return;}
+    public int getMaxNumberOfSamples()
+    {return this.maxNumberOfSamples;}
+    public String getStatus(){return this.status;}
+    public float getHighestRecordThreshold(){return this.highestRecordThreshold;}
+
+    public EarthquakeAnalyzer(float Threshold,int maxNumberOfSamples,float differenceSWAndPW)
+    {
+        this.PWThreshold=Threshold;
+        this.SWThreshold=PWThreshold+differenceSWAndPW;
+        this.maxNumberOfSamples=maxNumberOfSamples;
+        this.difference=differenceSWAndPW;
+        x=new ArrayList<>();
+        y=new ArrayList<>();
+        z=new ArrayList<>();
+        status="DETERMINEPW";
+        startSampling=false;
+        this.earthquakeDetected=false;
+    }
+    public String detectEarthquake(float x,float y,float z)
+    {
+        String result=null;
+        if(this.x.size()>this.maxNumberOfSamples)
+        {
+            startSampling=true;
+            this.x.remove(0);
+            this.y.remove(0);
+            this.z.remove(0);
+        }
+        this.x.add(x);
+        this.y.add(y);
+        this.z.add(z);
+        if(startSampling) {
+            switch (status) {
+                case "DETERMINEPW": {
+                    determinePrimaryWave();
+                    result = null;
+                    break;
+                }
+                case "PWTHRESHOLDEXCEED": {
+                    calculatePrimaryWave();
+                    result = null;
+                    break;
+                }
+                case "DETERMINESW": {
+                    result = null;
+                    calculateSecondaryWave();
+                    break;
+                }
+                case "EARTHQUAKEDETECTED": {
+                    int seconds = endDate.getSeconds() - startDate.getSeconds();
+                    result = startX + "," + startY + "," + startZ + "," + seconds + ",";
+                    earthquakeDetected = true;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+    private void determinePrimaryWave()
+    {
+        Float[] values=getAverageOfSamples();
+        if(values[0]>PWThreshold)
+        {
+            status="PWTHRESHOLDEXCEED";
+            startX=this.x.get(x.size()-1);
+            startY=this.y.get(x.size()-1);
+            startZ=this.z.get(x.size()-1);
+            highestRecordThreshold=PWThreshold;
+        }
+        else {
+            status = "DETERMINEPW";
+        }
+    }
+    private void calculatePrimaryWave()
+    {
+        float aveX=getAverageOfSamples()[0];
+        //float aveY=getAverageOfSamples()[1];
+        //float aveZ=getAverageOfSamples()[2];
+        if(aveX<=PWThreshold)
+        {
+            status="DETERMINESW";
+            startDate=Calendar.getInstance().getTime();
+            SWThreshold=highestRecordThreshold+difference;
+        }
+        else {
+            highestRecordThreshold = aveX > highestRecordThreshold ? aveX : highestRecordThreshold;
+           // highestRecordThreshold = aveY > highestRecordThreshold ? aveY : highestRecordThreshold;
+            //highestRecordThreshold = aveZ > highestRecordThreshold ? aveZ : highestRecordThreshold;
+            status = "PWTHRESHOLDEXCEED";
+        }
+    }
+    private void calculateSecondaryWave()
+    {
+        float aveX=getAverageOfSamples()[0];
+        //float aveY=getAverageOfSamples()[1];
+        //float aveZ=getAverageOfSamples()[2];
+        if(aveX>SWThreshold)
+        {
+            status="EARTHQUAKEDETECTED";
+            endDate=Calendar.getInstance().getTime();
+        }
+        else {
+            status = "DETERMINESW";
+        }
+    }
+    /*public Float[] getAverageOfSamples()
+    {
+        float averageX=0,averageY=0,averageZ=0;
+        for(int count=0;count<this.x.size();count++)
+        {
+            averageX+=Math.abs(this.x.get(count));
+            averageY+=Math.abs(this.y.get(count));
+            averageZ+=Math.abs(this.z.get(count));
+        }
+        averageX/=maxNumberOfSamples;
+        averageY/=maxNumberOfSamples;
+        averageZ/=maxNumberOfSamples;
+        return new Float[]{averageX,averageY,averageZ};
+    }*/
+    public Float[] getAverageOfSamples()
+    {
+        float aveX=0;
+        for(int count=0;count<this.x.size();count++)
+        {
+            aveX+=Math.abs(this.x.get(count));
+        }
+        aveX/=maxNumberOfSamples;
+        return new Float[]{(float)aveX};
+    }
+    //-------------------------------------------------------------------------------------------------------------------------
+    //For Loaded Data detectionOfEarthquake
+    //-------------------------------------------------------------------------------------------------------------------------
     public static String detectEarthquake(EarthQuakeDataClass earthQuakeDataClass,float PWthreshold)
     {
+
         int definedNumberOfSamples=50,maxPWNumberOfSamples=50,maxSWNumberOfSamples=1000,initcount=0,startTime=0,endTime=0;
         Date currentTime = Calendar.getInstance().getTime();
         ArrayList<Float> arX=new ArrayList<>();
