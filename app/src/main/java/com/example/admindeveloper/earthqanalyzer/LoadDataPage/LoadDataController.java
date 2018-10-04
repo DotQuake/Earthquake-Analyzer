@@ -1,76 +1,46 @@
 package com.example.admindeveloper.earthqanalyzer.LoadDataPage;
-import android.os.CountDownTimer;
-import com.example.admindeveloper.earthqanalyzer.CompassPage.CompassPageController;
+
+import com.example.admindeveloper.earthqanalyzer.CSVFileDecoder;
 import com.example.admindeveloper.earthqanalyzer.EarthQuakeDataClass;
+import com.example.admindeveloper.earthqanalyzer.EarthquakeAnalyzer;
+import com.jaiselrahman.filepicker.model.MediaFile;
+
 import java.util.ArrayList;
 
 public class LoadDataController{
 
-    public static float calculateHypocenter(EarthQuakeDataClass data)
+    private float hypocenter;
+    private float direction;
+    private EarthQuakeDataClass data;
+    public LoadDataController()
     {
-        float hypocenter=0;
+
+    }
+    public EarthQuakeDataClass getEarthQuakeData()
+    {
+        return this.data;
+    }
+    public boolean initializeData(float PWThreshold,int compassDegree,MediaFile file)
+    {
+        this.data= CSVFileDecoder.decodeCSVFile(file);
+        String[] val=EarthquakeAnalyzer.detectEarthquake(this.data,(float)0.2).split(",");
+        if(val!=null)
+        {
+            int startCount=Integer.parseInt(val[0]);
+            int startTime=Integer.parseInt(val[1]);
+            int endTime=Integer.parseInt(val[2]);
+            this.hypocenter= EarthquakeAnalyzer.calculateHypocenter(startTime,endTime);
+            this.direction=EarthquakeAnalyzer.calculateDirection(this.data,compassDegree,startCount);
+            return true;
+        }
+        return false;
+    }
+    public float getHypocenter()
+    {
         return hypocenter;
     }
-    public static float calculateDirection(EarthQuakeDataClass data,float compassDegree,float threshold,float earthQuakeSampling)
+    public float getDirection()
     {
-        CompassPageController controller=new CompassPageController();
-        float direction=0;
-        boolean flagStartSampling=false,flagStartEarthqyake;
-        CountDownTimer countTimer;
-        ArrayList<Float> EHE= new ArrayList<>();
-        ArrayList<Float> EHZ=new ArrayList<>();
-        ArrayList<Float> EHN=new ArrayList<>();
-        ArrayList<Integer> earthQuakeIndexes=new ArrayList<Integer>();
-        //checking the earthquake
-        for(int count=0;count<data.getEHZ().size();count++)
-        {
-            if(data.getEHZ().get(count)>threshold||data.getEHN().get(count)>threshold||data.getEHZ().get(count)>threshold)
-            {
-
-            }
-        }
-        //----------------------
-        for(int count=0;count<data.getEHE().size();count++)
-        {
-            if(data.getEHE().get(count)>threshold||data.getEHN().get(count)>threshold||data.getEHZ().get(count)>threshold||flagStartSampling)
-            {
-                flagStartSampling=true;
-                if(EHE.size()<=earthQuakeSampling) {
-                    EHE.add(data.getEHE().get(count));
-                    EHZ.add(data.getEHZ().get(count));
-                    EHN.add(data.getEHN().get(count));
-                }
-                else {
-                    flagStartSampling=false;
-                }
-                if(!flagStartSampling) {
-                    double angle=Math.toDegrees(Math.atan((float)Math.abs(EHN.get(0))/(float)Math.abs(EHE.get(0))));
-                    if(EHE.get(0)>0&&EHN.get(0)>0) {
-                        direction=(float)(90-angle)+compassDegree;
-                    }
-                    else if(EHE.get(0)>0&&EHN.get(0)<0) {
-                        direction=(float)(90+angle)+compassDegree;
-                    }
-                    else if(EHE.get(0)<0&&EHN.get(0)>0) {
-                        direction=(float)(90-angle+180)+compassDegree;
-                    }
-                    else
-                    {
-                        direction=(float)(90-angle+270)+compassDegree;
-                    }
-                    return direction;
-                }
-            }
-            controller.setDegree(direction);
-        }
         return direction;
-    }
-    public float getCompassData(){
-        return 0;
-    }
-    public static boolean detectEarthquake(EarthQuakeDataClass data){
-        boolean earthQuakeDetected=true;
-
-        return earthQuakeDetected;
     }
 }

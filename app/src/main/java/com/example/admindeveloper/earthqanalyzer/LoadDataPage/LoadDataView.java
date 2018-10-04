@@ -19,12 +19,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.admindeveloper.earthqanalyzer.CSVFileDecoder;
 import com.example.admindeveloper.earthqanalyzer.CompassPage.CompassPageController;
 import com.example.admindeveloper.earthqanalyzer.DisplayGraph;
 import com.example.admindeveloper.earthqanalyzer.EarthQuakeDataClass;
-import com.example.admindeveloper.earthqanalyzer.MediaRescan;
 import com.example.admindeveloper.earthqanalyzer.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.jaiselrahman.filepicker.activity.FilePickerActivity;
@@ -39,8 +36,6 @@ public class LoadDataView extends Fragment implements SensorEventListener
 {
     View myView;
     Button loadDatabtn;
-    EarthQuakeDataClass data;
-    LoadDataController controller;
     SensorManager senSensorManager;
     CompassPageController cpc;
     float compassDegree;
@@ -48,7 +43,6 @@ public class LoadDataView extends Fragment implements SensorEventListener
     public LineChart rawDataGraph;
     public TextView hypocenterBox;
     public TextView directionBox;
-    public TextView debugBox;
     DisplayGraph dG=new DisplayGraph();
     public void displayHypocenterBox(float distance)
     {
@@ -61,17 +55,17 @@ public class LoadDataView extends Fragment implements SensorEventListener
         directionBox.setText("Direction: "+where);
     }
     public void openDocumentOpener(View view){
-        Intent intent = new Intent(view.getContext(),FilePickerActivity.class);
-        intent.putExtra(FilePickerActivity.CONFIGS, new Configurations.Builder()
-                .setShowImages(false)
-                .setShowAudios(false)
-                .setShowFiles(true)
-                .setShowVideos(false)
-                .setSuffixes("csv")
-                .setCheckPermission(true)
-                .setMaxSelection(1)
-                .build());
-        startActivityForResult(intent, FILE_REQUEST_CODE);
+            Intent intent = new Intent(view.getContext(), FilePickerActivity.class);
+            intent.putExtra(FilePickerActivity.CONFIGS, new Configurations.Builder()
+                    .setShowImages(false)
+                    .setShowAudios(false)
+                    .setShowFiles(true)
+                    .setShowVideos(false)
+                    .setSuffixes("csv")
+                    .setCheckPermission(true)
+                    .setMaxSelection(1)
+                    .build());
+            startActivityForResult(intent, FILE_REQUEST_CODE);
     }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,17 +84,13 @@ public class LoadDataView extends Fragment implements SensorEventListener
         rawDataGraph=myView.findViewById(R.id.rawDataChart);
         cpc = new CompassPageController();
         dG.setup(rawDataGraph);
-        //debugBox=myView.findViewById(R.id.debugView);
-        //debugBox.setMovementMethod(new ScrollingMovementMethod());
         loadDatabtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openDocumentOpener(view);
-                //OpenDocumentOpener2();
             }
         });
         ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
-        MediaRescan mr = new MediaRescan();
         return myView;
     }
     @Override
@@ -115,21 +105,28 @@ public class LoadDataView extends Fragment implements SensorEventListener
                 MediaFile file=files.get(0);
                 if(file.getMediaType()==MediaFile.TYPE_FILE)
                 {
-                    this.data= CSVFileDecoder.decodeCSVFile(file);
-                    hypocenterBox.setText(file.getPath());
-                }
-                if(this.data!=null) {
-                    for(int count=0;count<this.data.getEHZ().size();count++) {
-                        dG.displayRawDataGraph(this.data.getEHE().get(count),this.data.getEHN().get(count),this.data.getEHZ().get(count),rawDataGraph);
+                    LoadDataController ld=new LoadDataController();
+                    if(ld.initializeData((float)0.2,(int)compassDegree,file))
+                    {
+                        EarthQuakeDataClass earthQuakeData=ld.getEarthQuakeData();
+                        for(int count=0;count<earthQuakeData.getEHZ().size();count++) {
+                            dG.displayRawDataGraph(earthQuakeData.getEHE().get(count),earthQuakeData.getEHN().get(count),earthQuakeData.getEHZ().get(count),rawDataGraph);
+                        }
+                        displayHypocenterBox(ld.getHypocenter());
+                        displayDirectionBox(ld.getDirection());
                     }
-                    //displayRawDataGraph(this.data.getEHE(),this.data.getEHN(),this.data.getEHZ());
-                   /*if(LoadDataController.detectEarthquake(this.data))
-                   {
-                        displayHypocenterBox(LoadDataController.calculateHypocenter(this.data));
-                        displayDirectionBox(LoadDataController.calculateDirection(this.data,compassDegree));
-                   }*/
+                    else
+                    {
+                        this.hypocenterBox.setText(null);
+                        this.directionBox.setText(null);
+                    }
+
                 }
                 break;
+            }
+            default:
+            {
+
             }
         }
     }

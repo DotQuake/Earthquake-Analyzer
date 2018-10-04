@@ -10,11 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class CSVFileDecoder {
-    public static ArrayList<Integer> detectEarthquake(EarthQuakeDataClass earthQuakeDataClass)
-    {
-        ArrayList<Integer> ar=null;
-        return ar;
-    }
+
 
     public static EarthQuakeDataClass decodeCSVFile(MediaFile file)
     {

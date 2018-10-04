@@ -1,5 +1,7 @@
 package com.example.admindeveloper.earthqanalyzer;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
@@ -102,7 +104,7 @@ public class RecordSaveDataXYZ {
     {
         Date currentTime = Calendar.getInstance().getTime();
         String fileName=(currentTime.getYear()+1900)+"-"+currentTime.getMonth()+"-"+currentTime.getDate()+"-"+currentTime.getHours()+currentTime.getMinutes()+"-"+currentTime.getSeconds()+".csv";
-        File myDir = new File("storage/emulated/0/Samples");
+        File myDir = new File("storage/emulated/0/Softeng");
         if(!myDir.exists())
         {
             myDir.mkdirs();

@@ -4,12 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,10 +26,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.admindeveloper.earthqanalyzer.DisplayGraph;
+import com.example.admindeveloper.earthqanalyzer.MediaRescan;
 import com.example.admindeveloper.earthqanalyzer.R;
 import com.example.admindeveloper.earthqanalyzer.RecordSaveDataXYZ;
 import com.github.mikephil.charting.charts.LineChart;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 
 public class RealTimeView extends Fragment implements SensorEventListener {
@@ -67,12 +71,8 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         rsdata.saveEarthquakeData("unknown",100);
         MediaScannerConnection.scanFile(getActivity(), new String[] {Environment.getExternalStorageDirectory().getPath()+"/Samples"}, null, null);
         Toast.makeText(getActivity(),"Saved",Toast.LENGTH_SHORT).show();
-       /* if(!file.equals("")) {
-            Toast.makeText(getActivity(),"Saved",Toast.LENGTH_SHORT).show();
-            //rsdata.saveData(file);
-
-        }*/
-
+        File myDir = new File(Environment.getExternalStorageDirectory()+"/SoftEng");
+        getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(myDir)));
     }
     public void recordDataBtnClick(){
         if(recordflag){
