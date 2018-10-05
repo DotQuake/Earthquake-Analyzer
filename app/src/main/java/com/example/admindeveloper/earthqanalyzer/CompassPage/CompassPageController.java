@@ -13,8 +13,8 @@ public class CompassPageController {
     public void setDegree(float degree) {
         this.degree = degree;
     }
-    public float calculateDirection(float x, float y,float z ,float threshold,float degree) {
 
+    public float calculateDirection(float x, float y,float z ,float threshold,float degree) {
 // From the phone's point of view
         if (z > threshold) {
 
@@ -55,39 +55,38 @@ public class CompassPageController {
             } else if (x > threshold && y > threshold) {// pushed to NORTHEAST
                 return (degree + 45);
             }
-
-
         }
         return 90;
     }
     public String getDirection(float d){
         String where = "NO";
-        if (degree >= 338 || degree <= 23) {
+        d = Math.round(d);
+        if (d >= 338 || d <= 23) {
             where = "N";
         }
-        if (degree < 338 && degree > 293) {
+        if (d < 338 && d > 293) {
             where = "NW";
         }
-        if (degree <= 293 && degree > 248) {
+        if (d <= 293 && d > 248) {
             where = "W";
         }
-        if (degree <= 248 && degree > 180) {
+        if (d <= 248 && d > 180) {
             where = "SW";
         }
-        if (degree <= 180 && degree > 157) {
+        if (d <= 180 && d > 157) {
             where = "S";
         }
-        if (degree <= 157 && degree > 112) {
+        if (d <= 157 && d > 112) {
             where = "SE";
         }
-        if (degree <= 112 && degree > 68) {
+        if (d <= 112 && d > 68) {
             where = "E";
         }
-        if (degree <= 68 && degree > 23) {
+        if (d <= 68 && d > 23) {
             where = "NE";
         }
 
-        return ""+d;
+        return where;
     }
 
     public boolean isDeviceTurned() {
