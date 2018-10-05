@@ -39,5 +39,16 @@
         android:text="@string/textview"
         android:layout_alignLeft="@+id/hypocenter" />
 
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/hypocenter"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="126dp"
+        android:layout_marginRight="126dp"
+        android:text="TextView" />
+
 
 </RelativeLayout>

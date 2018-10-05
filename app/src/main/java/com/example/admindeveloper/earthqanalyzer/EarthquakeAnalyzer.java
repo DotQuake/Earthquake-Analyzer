@@ -1,5 +1,7 @@
 package com.example.admindeveloper.earthqanalyzer;
 
+import android.os.CountDownTimer;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,8 +23,12 @@ public class EarthquakeAnalyzer{
     private float startZ;
     private float difference;
     private boolean startSampling;
-    private boolean earthquakeDetected;
+    private CountDownTimer delay=null;
+    private boolean delaybool=false;
 
+    public ArrayList<Float> getListY(){return this.y;}
+    public ArrayList<Float> getListZ(){return this.z;}
+    public ArrayList<Float> getListX(){return this.x;}
     public void setPWThreshold(float PWThreshold)
     {this.PWThreshold=PWThreshold;return;}
     public float getPWThreshold()
@@ -33,6 +39,8 @@ public class EarthquakeAnalyzer{
     {return this.maxNumberOfSamples;}
     public String getStatus(){return this.status;}
     public float getHighestRecordThreshold(){return this.highestRecordThreshold;}
+
+
 
     public EarthquakeAnalyzer(float Threshold,int maxNumberOfSamples,float differenceSWAndPW)
     {
@@ -45,43 +53,68 @@ public class EarthquakeAnalyzer{
         z=new ArrayList<>();
         status="DETERMINEPW";
         startSampling=false;
-        this.earthquakeDetected=false;
     }
+    public void startDelay(){
+        if(delay==null){
+            delay = new CountDownTimer(1000, 200) {
+                @Override
+                public void onTick(long l) {
+                }
+
+                @Override
+                public void onFinish() {
+                    delaybool = true;
+                    delay = null;
+                }
+            }.start();
+        }
+    }
+
     public String detectEarthquake(float x,float y,float z)
     {
         String result=null;
-        if(this.x.size()>this.maxNumberOfSamples)
+        if(!delaybool)
         {
-            startSampling=true;
-            this.x.remove(0);
-            this.y.remove(0);
-            this.z.remove(0);
+            startDelay();
         }
-        this.x.add(x);
-        this.y.add(y);
-        this.z.add(z);
-        if(startSampling) {
-            switch (status) {
-                case "DETERMINEPW": {
-                    determinePrimaryWave();
-                    result = null;
-                    break;
-                }
-                case "PWTHRESHOLDEXCEED": {
-                    calculatePrimaryWave();
-                    result = null;
-                    break;
-                }
-                case "DETERMINESW": {
-                    result = null;
-                    calculateSecondaryWave();
-                    break;
-                }
-                case "EARTHQUAKEDETECTED": {
-                    int seconds = endDate.getSeconds() - startDate.getSeconds();
-                    result = startX + "," + startY + "," + startZ + "," + seconds + ",";
-                    earthquakeDetected = true;
-                    break;
+        else {
+            if (this.x.size() > this.maxNumberOfSamples) {
+                startSampling = true;
+                this.x.remove(0);
+                this.y.remove(0);
+                this.z.remove(0);
+            }
+            this.x.add(x);
+            this.y.add(y);
+            this.z.add(z);
+            if (startSampling) {
+                switch (status) {
+                    case "DETERMINEPW": {
+                        determinePrimaryWave();
+                        result = null;
+                        break;
+                    }
+                    case "PWTHRESHOLDEXCEED": {
+                        calculatePrimaryWave();
+                        result = null;
+                        break;
+                    }
+                    case "DETERMINESW": {
+                        result = null;
+                        calculateSecondaryWave();
+                        break;
+                    }
+                    case "EARTHQUAKEDETECTED": {
+                        int seconds = endDate.getSeconds() - startDate.getSeconds();
+                        result = startX + "," + startY + "," + startZ + "," + seconds + ",";
+                        SWonFinish();
+                        break;
+                    }
+                    case "FINISH":
+                    {
+                        result=null;
+                        break;
+                    }
                 }
             }
         }
@@ -90,12 +123,10 @@ public class EarthquakeAnalyzer{
     private void determinePrimaryWave()
     {
         Float[] values=getAverageOfSamples();
-        if(values[0]>PWThreshold)
+        if(values[0]>PWThreshold||values[1]>PWThreshold||values[2]>PWThreshold)
         {
             status="PWTHRESHOLDEXCEED";
-            startX=this.x.get(x.size()-1);
-            startY=this.y.get(x.size()-1);
-            startZ=this.z.get(x.size()-1);
+            startDate=Calendar.getInstance().getTime();
             highestRecordThreshold=PWThreshold;
         }
         else {
@@ -104,28 +135,33 @@ public class EarthquakeAnalyzer{
     }
     private void calculatePrimaryWave()
     {
-        float aveX=getAverageOfSamples()[0];
-        //float aveY=getAverageOfSamples()[1];
-        //float aveZ=getAverageOfSamples()[2];
-        if(aveX<=PWThreshold)
+        Float[] values=getAverageOfSamples();
+        if(values[0]<=PWThreshold&&values[1]<=PWThreshold&&values[2]<=PWThreshold)
         {
             status="DETERMINESW";
-            startDate=Calendar.getInstance().getTime();
+            for(int count=0;count<this.x.size();count++)
+            {
+                if(this.x.get(count)>PWThreshold||this.y.get(count)>PWThreshold||this.z.get(count)>PWThreshold)
+                {
+                    startX=this.x.get(count);
+                    startY=this.y.get(count);
+                    startZ=this.z.get(count);
+                    count=this.x.size();
+                }
+            }
             SWThreshold=highestRecordThreshold+difference;
         }
         else {
-            highestRecordThreshold = aveX > highestRecordThreshold ? aveX : highestRecordThreshold;
-           // highestRecordThreshold = aveY > highestRecordThreshold ? aveY : highestRecordThreshold;
-            //highestRecordThreshold = aveZ > highestRecordThreshold ? aveZ : highestRecordThreshold;
+            highestRecordThreshold = values[0] > highestRecordThreshold ? values[0] : highestRecordThreshold;
+            highestRecordThreshold = values[1] > highestRecordThreshold ? values[1] : highestRecordThreshold;
+            highestRecordThreshold = values[2] > highestRecordThreshold ? values[2] : highestRecordThreshold;
             status = "PWTHRESHOLDEXCEED";
         }
     }
     private void calculateSecondaryWave()
     {
-        float aveX=getAverageOfSamples()[0];
-        //float aveY=getAverageOfSamples()[1];
-        //float aveZ=getAverageOfSamples()[2];
-        if(aveX>SWThreshold)
+        Float[] values=getAverageOfSamples();
+        if(values[0]>SWThreshold||values[1]>SWThreshold||values[2]>SWThreshold)
         {
             status="EARTHQUAKEDETECTED";
             endDate=Calendar.getInstance().getTime();
@@ -134,7 +170,18 @@ public class EarthquakeAnalyzer{
             status = "DETERMINESW";
         }
     }
-    /*public Float[] getAverageOfSamples()
+    private void SWonFinish()
+    {
+        Float[] values=getAverageOfSamples();
+        if(values[0]<=SWThreshold&&values[1]<=SWThreshold&&values[2]<=SWThreshold)
+        {
+            status="FINISH";
+        }
+        else {
+            status = "EARTHQUAKEDETECTED";
+        }
+    }
+    public Float[] getAverageOfSamples()
     {
         float averageX=0,averageY=0,averageZ=0;
         for(int count=0;count<this.x.size();count++)
@@ -147,16 +194,6 @@ public class EarthquakeAnalyzer{
         averageY/=maxNumberOfSamples;
         averageZ/=maxNumberOfSamples;
         return new Float[]{averageX,averageY,averageZ};
-    }*/
-    public Float[] getAverageOfSamples()
-    {
-        float aveX=0;
-        for(int count=0;count<this.x.size();count++)
-        {
-            aveX+=Math.abs(this.x.get(count));
-        }
-        aveX/=maxNumberOfSamples;
-        return new Float[]{(float)aveX};
     }
     //-------------------------------------------------------------------------------------------------------------------------
     //For Loaded Data detectionOfEarthquake

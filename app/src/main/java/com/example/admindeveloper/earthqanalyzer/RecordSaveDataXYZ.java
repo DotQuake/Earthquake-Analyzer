@@ -36,6 +36,12 @@ public class RecordSaveDataXYZ {
     public List<Float> getZ_values() {
         return z_values;
     }
+    public void clearData()
+    {
+        x_values.clear();
+        y_values.clear();
+        z_values.clear();
+    }
     public void recordData(float x, float y, float z){
         x_values.add(x);
         y_values.add(y);
@@ -45,7 +51,7 @@ public class RecordSaveDataXYZ {
     {
         Date currentTime = Calendar.getInstance().getTime();
         String fileName=(currentTime.getYear()+1900)+"-"+currentTime.getMonth()+"-"+currentTime.getDate()+"-"+currentTime.getHours()+currentTime.getMinutes()+"-"+currentTime.getSeconds()+".csv";
-        File myDir = new File("storage/emulated/0/Softeng");
+        File myDir = new File("storage/emulated/0/Samples");
         if(!myDir.exists())
         {
             myDir.mkdirs();
@@ -82,6 +88,7 @@ public class RecordSaveDataXYZ {
             bw.write(x_values.size()+","+x_values.size()+","+x_values.size()+",#number of samples,\r\n");
             bw.write("0,0,0,#sync,\r\n");
             bw.write(",,,#sync source,\r\n");
+            bw.write("g,g,g,,\r\n");
             bw.write("--------,--------,--------,,\r\n");
             for(int count=0;count<x_values.size();count++)
             {

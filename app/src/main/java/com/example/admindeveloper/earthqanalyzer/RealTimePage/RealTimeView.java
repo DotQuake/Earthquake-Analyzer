@@ -41,7 +41,7 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     public LineChart rawDataGraph;
     public TextView hypocenterBox;
     public TextView directionBox;
-    public Button saveDataBtn, recordDataBtn;
+    public Button saveDataBtn, recordDataBtn,restartBtn;
     TextView timeBox;
     boolean result;
     //-------------------------------
@@ -54,7 +54,6 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     //long yourmilliseconds ;
     SimpleDateFormat sdf ;
     //Date resultdate ;
-    EarthquakeAnalyzer ea;
     boolean recordflag = false;
    // public List<String> time_values;
     RealTimeController rtc;
@@ -115,30 +114,20 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     private void displayRawDataGraph(SensorEvent event) {
 
         if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            rtc.updateXYZ(event.values[0],event.values[1],event.values[2]);
+            status.setText(rtc.getStatus());
+            if(rtc.updateXYZ(event.values[0],event.values[1],event.values[2]))
+            {
+                status.append("\r\n"+rtc.getHypocenter()+"\r\n"+rtc.getDirection());
+            }
             mX.setText(Float.toString(rtc.getX()));
             mY.setText(Float.toString(rtc.getY()));
             mZ.setText(Float.toString(rtc.getZ()));
                if (recordflag) {
-                rsdata.recordData(rtc.getX(),rtc.getY(),rtc.getZ());
-            //time_values.add(index++,sdf.format(resultdate));
-            //rawtimemilis.add(index++,yourmilliseconds);
-              }
-            String result=ea.detectEarthquake(rtc.getX(),rtc.getY(),rtc.getZ());
-            if(ea.getStatus()=="DETERMINEPW")
-            {
-                recordflag=true;
-            }
-            else if(ea.getStatus()=="EARTHQUAKEDETECTED")
-            {
-
-            }
-            Float[] val=ea.getAverageOfSamples();
-            if(result!=null)
-            {
-                Toast.makeText(getActivity(),"Earthquake Detected",Toast.LENGTH_LONG);
-            }
-              dg.displayRawDataGraph(val[0],rtc.getX(),0,rawDataGraph);
+                   rsdata.recordData(rtc.getX(), rtc.getY(), rtc.getZ());
+                   //time_values.add(index++,sdf.format(resultdate));
+                   //rawtimemilis.add(index++,yourmilliseconds);
+               }
+              dg.displayRawDataGraph(rtc.getX(),rtc.getY(),rtc.getZ(),rawDataGraph);
             }
         }
     //-----------------------------------------------------------------------------------------------------
@@ -159,9 +148,17 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         recordDataBtn = (Button) myView.findViewById(R.id.recordbt);
         saveDataBtn = (Button) myView.findViewById(R.id.savebt);
         rtc = new RealTimeController();
+        rtc.initializeAnalyzer(0.3F, 50, 0.1F);
         dg = new DisplayGraph();
         rsdata = new RecordSaveDataXYZ();
         status=myView.findViewById(R.id.mstx);
+        restartBtn=myView.findViewById(R.id.restart);
+        restartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rtc.initializeAnalyzer(0.3F,50 ,0.1F );
+            }
+        });
         recordDataBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -192,8 +189,6 @@ public class RealTimeView extends Fragment implements SensorEventListener {
             }
         });
         builder.show();
-
-        ea=new EarthquakeAnalyzer((float)0.3,100,(float)0.1);
         //displayTime();
         smooththread();
         dg.setup(rawDataGraph);

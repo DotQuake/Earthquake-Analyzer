@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.example.admindeveloper.earthqanalyzer.CompassPage.CompassPageController;
 import com.example.admindeveloper.earthqanalyzer.DisplayGraph;
 import com.example.admindeveloper.earthqanalyzer.EarthQuakeDataClass;
+import com.example.admindeveloper.earthqanalyzer.EarthquakeAnalyzer;
 import com.example.admindeveloper.earthqanalyzer.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.jaiselrahman.filepicker.activity.FilePickerActivity;
@@ -43,7 +44,9 @@ public class LoadDataView extends Fragment implements SensorEventListener
     public LineChart rawDataGraph;
     public TextView hypocenterBox;
     public TextView directionBox;
+    TextView statusText;
     DisplayGraph dG=new DisplayGraph();
+    EarthquakeAnalyzer ea;
     public void displayHypocenterBox(float distance)
     {
         hypocenterBox.setText("Hypocenter: "+distance);
@@ -53,6 +56,10 @@ public class LoadDataView extends Fragment implements SensorEventListener
         String where=null;
         where = cpc.getDirection(degree);
         directionBox.setText("Direction: "+where);
+    }
+    public void displayStatus(String text)
+    {
+        statusText.setText(text);
     }
     public void openDocumentOpener(View view){
             Intent intent = new Intent(view.getContext(), FilePickerActivity.class);
@@ -84,9 +91,12 @@ public class LoadDataView extends Fragment implements SensorEventListener
         rawDataGraph=myView.findViewById(R.id.rawDataChart);
         cpc = new CompassPageController();
         dG.setup(rawDataGraph);
+        statusText=myView.findViewById(R.id.status);
+        ea=new EarthquakeAnalyzer((float)0.3,150 ,(float)0.1 );
         loadDatabtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ea=new EarthquakeAnalyzer((float)0.3,150 ,(float)0.1 );
                 openDocumentOpener(view);
             }
         });
@@ -110,6 +120,20 @@ public class LoadDataView extends Fragment implements SensorEventListener
                     {
                         EarthQuakeDataClass earthQuakeData=ld.getEarthQuakeData();
                         for(int count=0;count<earthQuakeData.getEHZ().size();count++) {
+                            String result=ea.detectEarthquake(earthQuakeData.getEHE().get(count),earthQuakeData.getEHN().get(count) ,earthQuakeData.getEHZ().get(count) );
+                            if(ea.getStatus()=="EARTHQUAKEDETECTED")
+                            {
+                                String[] values=result.split(",");
+                                Float startX = Float.parseFloat(values[0]);
+                                Float startY = Float.parseFloat(values[1]);
+                                Float startZ = Float.parseFloat(values[2]);
+                                Integer seconds = Integer.parseInt(values[3]);
+                                displayStatus("EARTHQUAKE DETECTED! \r\n" + startX + "\r\n" + startY + "\r\n" + startZ + "\r\n" + seconds);
+                            }
+                            else
+                            {
+                                displayStatus("NO EARTHQUAKE");
+                            }
                             dG.displayRawDataGraph(earthQuakeData.getEHE().get(count),earthQuakeData.getEHN().get(count),earthQuakeData.getEHZ().get(count),rawDataGraph);
                         }
                         displayHypocenterBox(ld.getHypocenter());
