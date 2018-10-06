@@ -16,17 +16,11 @@ public class CompassPageController {
 
     public float calculateDirection(float x, float y,float z ,float threshold,float degree) {
 // From the phone's point of view
+        degree = Math.round(degree);
         if (z > threshold) {
 
-            if (x > threshold && y < threshold) { // pushed to EAST
-                return (degree - 90);
-            } else if (x < -threshold && y < threshold) { // pushed to WEST
-                return (degree + 90);
-            } else if (x < threshold && y > threshold) { // pushed to NORTH
-                return (degree - 180);
-            } else if (x < threshold && y < -threshold) {// pushed to SOUTH
-                return (degree);
-            } else if (x < -threshold && y < -threshold) {// pushed to SOUTHWEST
+
+            if (x < -threshold && y < -threshold) {// pushed to SOUTHWEST
                 return (degree + 135);
             } else if (x > threshold && y < -threshold) {// pushed to SOUTHEAST
                 return (degree - 135);
@@ -34,19 +28,19 @@ public class CompassPageController {
                 return (degree + 45);
             } else if (x > threshold && y > threshold) {// pushed to NORTHEAST
                 return (degree - 45);
-            }
+            } else  if (x > threshold ) { // pushed to EAST
+                return (degree - 90);
+            } else if (x < -threshold) { // pushed to WEST
+                return (degree + 90);
+            } else if (y > threshold) { // pushed to NORTH
+                return (degree - 180);
+            } else if (y < -threshold) {// pushed to SOUTH
+                return (degree);}
 
         } else {
 
-            if (x > threshold && y < threshold) { // pushed to EAST
-                return (degree + 90);
-            } else if (x < -threshold && y < threshold) { // pushed to WEST
-                return (degree - 90);
-            } else if (x < threshold && y > threshold) { // pushed to NORTH
-                return (degree);
-            } else if (x < threshold && y < -threshold) {// pushed to SOUTH
-                return (degree - 180);
-            } else if (x < -threshold && y < -threshold) {// pushed to SOUTHWEST
+
+            if (x < -threshold && y < -threshold) {// pushed to SOUTHWEST
                 return (degree - 135);
             } else if (x > threshold && y < -threshold) {// pushed to SOUTHEAST
                 return (degree + 135);
@@ -54,7 +48,15 @@ public class CompassPageController {
                 return (degree - 45);
             } else if (x > threshold && y > threshold) {// pushed to NORTHEAST
                 return (degree + 45);
-            }
+            }else if (x > threshold ) { // pushed to EAST
+                return (degree + 90);
+            } else if (x < -threshold ) { // pushed to WEST
+                return (degree - 90);
+            } else if ( y > threshold) { // pushed to NORTH
+                return (degree);
+            } else if ( y < -threshold) {// pushed to SOUTH
+                return (degree - 180);}
+
         }
         return 90;
     }
@@ -70,13 +72,13 @@ public class CompassPageController {
         if (d <= 293 && d > 248) {
             where = "W";
         }
-        if (d <= 248 && d > 180) {
+        if (d <= 248 && d > 202) {
             where = "SW";
         }
-        if (d <= 180 && d > 157) {
+        if (d <= 202 && d > 158) {
             where = "S";
         }
-        if (d <= 157 && d > 112) {
+        if (d <= 158 && d > 112) {
             where = "SE";
         }
         if (d <= 112 && d > 68) {

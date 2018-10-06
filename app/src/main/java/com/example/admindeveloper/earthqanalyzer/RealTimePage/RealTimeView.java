@@ -22,12 +22,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.admindeveloper.earthqanalyzer.CompassPage.CompassPageController;
+import com.example.admindeveloper.earthqanalyzer.CompassPage.CompassPageView;
 import com.example.admindeveloper.earthqanalyzer.DisplayGraph;
-import com.example.admindeveloper.earthqanalyzer.EarthquakeAnalyzer;
-import com.example.admindeveloper.earthqanalyzer.MediaRescan;
 import com.example.admindeveloper.earthqanalyzer.R;
 import com.example.admindeveloper.earthqanalyzer.RecordSaveDataXYZ;
 import com.github.mikephil.charting.charts.LineChart;
@@ -37,28 +38,28 @@ import java.text.SimpleDateFormat;
 
 public class RealTimeView extends Fragment implements SensorEventListener {
 
+    View myView;
+    private ImageView image;
+    float currentdegree = 0f;
+
 
     public LineChart rawDataGraph;
     public TextView hypocenterBox;
     public TextView directionBox;
     public Button saveDataBtn, recordDataBtn,restartBtn;
-    TextView timeBox;
-    boolean result;
+    TextView timeBox , dtx;
     //-------------------------------
-    View myView;
     private SensorManager mSensorManager;
-    TextView mX,mY,mZ;
     private Thread thread;
     private boolean plotData = true;
     TextView status;
-    //long yourmilliseconds ;
     SimpleDateFormat sdf ;
-    //Date resultdate ;
     boolean recordflag = false;
-   // public List<String> time_values;
     RealTimeController rtc;
     DisplayGraph dg;
     RecordSaveDataXYZ rsdata;
+    CompassPageController cpc = new CompassPageController();
+    CompassPageView cpv = new CompassPageView();
     //-------------------------------
     public void displayHypocenterBox(float distance){
 
@@ -115,21 +116,30 @@ public class RealTimeView extends Fragment implements SensorEventListener {
 
         if(event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             status.setText(rtc.getStatus());
-            if(rtc.updateXYZ(event.values[0],event.values[1],event.values[2]))
+            if(rtc.updateXYZ(event.values[0],event.values[1],event.values[2],cpc))
             {
                 status.append("\r\n"+rtc.getHypocenter()+"\r\n"+rtc.getDirection());
             }
-            mX.setText(Float.toString(rtc.getX()));
-            mY.setText(Float.toString(rtc.getY()));
-            mZ.setText(Float.toString(rtc.getZ()));
                if (recordflag) {
                    rsdata.recordData(rtc.getX(), rtc.getY(), rtc.getZ());
-                   //time_values.add(index++,sdf.format(resultdate));
-                   //rawtimemilis.add(index++,yourmilliseconds);
                }
               dg.displayRawDataGraph(rtc.getX(),rtc.getY(),rtc.getZ(),rawDataGraph);
             }
         }
+        public void showMessage(){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+            builder.setCancelable(false);
+            builder.setTitle("Real Time");
+            builder.setMessage("Please put your device on a Flat Surface Area");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Toast.makeText(getContext(),"Thank you", Toast.LENGTH_SHORT).show();
+                }
+            });
+            builder.show();
+        }
+
     //-----------------------------------------------------------------------------------------------------
 
 
@@ -140,10 +150,11 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.realtime,container,false);
         rawDataGraph = (LineChart) myView.findViewById(R.id.chart1);
-        mX = (TextView) myView.findViewById(R.id.tvx);
-        mY = (TextView) myView.findViewById(R.id.tvy);
-        mZ = (TextView) myView.findViewById(R.id.tvz);
-        timeBox = (TextView) myView.findViewById(R.id.mstx);
+        dtx = (TextView) myView.findViewById(R.id.directiontx);
+        image = (ImageView) myView.findViewById(R.id.imview2);
+        timeBox = (TextView) myView.findViewById(R.id.statustx);
+        hypocenterBox = (TextView) myView.findViewById(R.id.hypocentertx);
+        directionBox = (TextView) myView.findViewById(R.id.directtx);
         //time_values = new ArrayList<>();
         recordDataBtn = (Button) myView.findViewById(R.id.recordbt);
         saveDataBtn = (Button) myView.findViewById(R.id.savebt);
@@ -151,7 +162,7 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         rtc.initializeAnalyzer(0.3F, 50, 0.1F);
         dg = new DisplayGraph();
         rsdata = new RecordSaveDataXYZ();
-        status=myView.findViewById(R.id.mstx);
+        status=myView.findViewById(R.id.statustx);
         restartBtn=myView.findViewById(R.id.restart);
         restartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -175,20 +186,7 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1000);
         }
-
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
-        builder.setCancelable(false);
-        builder.setTitle("Real Time");
-        builder.setMessage("Please put your device on a Flat Surface Area");
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(getContext(),"Thank you", Toast.LENGTH_SHORT).show();
-            }
-        });
-        builder.show();
+        showMessage();
         //displayTime();
         smooththread();
         dg.setup(rawDataGraph);
@@ -214,6 +212,8 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSensorManager = (SensorManager) this.getActivity().getSystemService(Activity.SENSOR_SERVICE);
+       // mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
     }
 
 
@@ -225,10 +225,14 @@ public class RealTimeView extends Fragment implements SensorEventListener {
                 plotData = false;
             }
 
+        }else if(event.sensor.getType() == Sensor.TYPE_ORIENTATION) {
+            cpc.setDegree(Math.round(event.values[0]));
+            dtx.setText(Float.toString(cpc.getDegree())+"°   "+cpc.getDirection(cpc.getDegree()));
+            image.startAnimation(cpv.displayAnimation(cpc.getDegree(),currentdegree,image));
+            currentdegree = -cpc.getDegree();
         }
 
     }
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
@@ -242,6 +246,7 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         }
         if(menuVisible){
             mSensorManager.registerListener(this,mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0), SensorManager.SENSOR_DELAY_GAME);
+            mSensorManager.registerListener(this,mSensorManager.getSensorList(Sensor.TYPE_ORIENTATION).get(0), SensorManager.SENSOR_DELAY_GAME);
         }else{
             mSensorManager.unregisterListener(this);
         }
@@ -258,6 +263,7 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         super.onStart();
         if(this.getUserVisibleHint()){
             mSensorManager.registerListener(this,mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0), SensorManager.SENSOR_DELAY_GAME);
+            mSensorManager.registerListener(this,mSensorManager.getSensorList(Sensor.TYPE_ORIENTATION).get(0), SensorManager.SENSOR_DELAY_GAME);
         }
     }
 
@@ -276,32 +282,5 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     }
     //-----------------------------------------------------------------------------------------------------
 
-    /*private void displayTime() {
-        Thread th = new Thread(new Runnable() {
-            private long startTime = System.currentTimeMillis();
-            public void run() {
-                while (true) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            yourmilliseconds = System.currentTimeMillis();
-                            sdf = new SimpleDateFormat("HH:mm:ss:SSS");
-                            resultdate = new Date(yourmilliseconds);
-                            timeBox.setText(""+sdf.format(resultdate));
-
-                        }
-                    });
-                    try {
-                        Thread.sleep(1);
-                    }
-                    catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        th.start();
-    }*/
 
 }

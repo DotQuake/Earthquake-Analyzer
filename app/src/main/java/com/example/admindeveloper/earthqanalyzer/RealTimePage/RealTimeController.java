@@ -5,7 +5,6 @@ import com.example.admindeveloper.earthqanalyzer.EarthquakeAnalyzer;
 import com.example.admindeveloper.earthqanalyzer.RecordSaveDataXYZ;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class RealTimeController {
     public String direction;
@@ -15,7 +14,6 @@ public class RealTimeController {
     private float[] linear_acceleration = {0,0,0};
     private float x,y,z;
     private EarthquakeAnalyzer ea=null;
-    private CompassPageController cpc = new CompassPageController();
     private RecordSaveDataXYZ rsdata=new RecordSaveDataXYZ();
     private boolean recordStarted=false;
 
@@ -25,7 +23,7 @@ public class RealTimeController {
     {
             ea=new EarthquakeAnalyzer(Threshold, maxNumberOfSamples, differenceSWAndPW);
     }
-    public boolean updateXYZ(float x , float y ,float z){
+    public boolean updateXYZ(float x , float y ,float z, CompassPageController cpc){
         gravity[0] = alpha * gravity[0] + (1 - alpha) * x;
         linear_acceleration[0] = x - gravity[0];
         this.x = linear_acceleration[0];
@@ -38,7 +36,7 @@ public class RealTimeController {
         linear_acceleration[2] = z - gravity[2];
         this.z = linear_acceleration[2];
         //recordEarthquake();
-        return detectEarthquake();
+        return detectEarthquake(cpc);
     }
     public float getX() {
         return x;
@@ -58,9 +56,9 @@ public class RealTimeController {
         this.hypocenter=seconds*8;
     }
 
-    public float getCompassData(){
+    /*public float getCompassData(){
         return cpc.getDegree();
-    }
+    }*/
     public void recordEarthquake()
     {
         if(ea!=null) {
@@ -92,7 +90,7 @@ public class RealTimeController {
         }
         return null;
     }
-    public boolean detectEarthquake(){
+    public boolean detectEarthquake(CompassPageController cpc2){
         if(ea!=null) {
             String result=ea.detectEarthquake(this.x, this.y, this.z);
             try {
@@ -103,7 +101,7 @@ public class RealTimeController {
                     Float startZ = Float.parseFloat(values[2]);
                     Integer seconds = Integer.parseInt(values[3]);
                     this.calculateHypocenter((float) seconds);
-                    direction=cpc.getDirection(cpc.calculateDirection(startX,startY ,startZ ,0 ,0 ));
+                    direction=cpc2.getDirection(cpc2.calculateDirection(startX,startY,startZ,0,cpc2.getDegree()));
                     return true;
                 }
             }

@@ -1,8 +1,6 @@
 package com.example.admindeveloper.earthqanalyzer.CompassPage;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.support.v4.app.Fragment;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -10,6 +8,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +28,7 @@ public class CompassPageView extends Fragment implements SensorEventListener {
 
     CompassPageController cpc;
 
-    private RotateAnimation displayAnimation(float degree, float currentdegree, ImageView image){
+    public RotateAnimation displayAnimation(float degree, float currentdegree, ImageView image){
         RotateAnimation ra = new RotateAnimation(currentdegree,-degree, Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
         ra.setDuration(210);
         ra.setFillAfter(true);
@@ -39,14 +38,14 @@ public class CompassPageView extends Fragment implements SensorEventListener {
         String where = "NO";
         degree = cpc.getDegree();
         where = cpc.getDirection(degree);
-        if(cpc.getComputedDegree()>degree-24&&cpc.getComputedDegree()<degree+24) {
+        /*if(cpc.getComputedDegree()>degree-24&&cpc.getComputedDegree()<degree+24) {
             mcompass.setTextColor(Color.RED);
         }
         else
         {
             mcompass.setTextColor(Color.BLACK);
-        }
-        mcompass.setText("Heading: " + Float.toString(degree) + " degrees   " + where);
+        }*/
+        mcompass.setText("Heading: " + Float.toString(degree) + "°   " + where);
     }
 
 
@@ -103,6 +102,12 @@ public class CompassPageView extends Fragment implements SensorEventListener {
     @Override
     public void onStop() {
         super.onStop();
+        mSensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         mSensorManager.unregisterListener(this);
     }
 
