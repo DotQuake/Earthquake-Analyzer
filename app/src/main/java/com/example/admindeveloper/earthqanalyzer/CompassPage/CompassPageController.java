@@ -64,28 +64,28 @@ public class CompassPageController {
         String where = "NO";
         d = Math.round(d);
         if (d >= 338 || d <= 23) {
-            where = "N";
+            where = "North";
         }
         if (d < 338 && d > 293) {
-            where = "NW";
+            where = "NorthWest";
         }
         if (d <= 293 && d > 248) {
-            where = "W";
+            where = "West";
         }
         if (d <= 248 && d > 202) {
-            where = "SW";
+            where = "SouthWest";
         }
         if (d <= 202 && d > 158) {
-            where = "S";
+            where = "South";
         }
         if (d <= 158 && d > 112) {
-            where = "SE";
+            where = "SouthEast";
         }
         if (d <= 112 && d > 68) {
-            where = "E";
+            where = "East";
         }
         if (d <= 68 && d > 23) {
-            where = "NE";
+            where = "NorthEast";
         }
 
         return where;
