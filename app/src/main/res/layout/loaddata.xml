@@ -17,38 +17,8 @@
         android:layout_marginBottom="49dp"
         android:text="@string/load" />
 
-    <TextView
-        android:id="@+id/hypocenter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="203dp"
-        android:layout_marginStart="22dp"
-        android:text="@string/textview"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="22dp" />
 
-    <TextView
-        android:id="@+id/direction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/hypocenter"
-        android:layout_marginBottom="136dp"
-        android:text="@string/textview"
-        android:layout_alignLeft="@+id/hypocenter" />
 
-    <TextView
-        android:id="@+id/status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/hypocenter"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginEnd="126dp"
-        android:layout_marginRight="126dp"
-        android:text="TextView" />
 
 
 </RelativeLayout>

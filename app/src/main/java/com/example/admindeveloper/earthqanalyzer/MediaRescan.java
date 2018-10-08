@@ -14,7 +14,7 @@ import java.io.File;
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            File myDir = new File(Environment.getExternalStorageDirectory()+"/SoftEng");
+            File myDir = new File(Environment.getExternalStorageDirectory()+"/Samples");
             sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(myDir)));
         }
     }

@@ -50,7 +50,7 @@ public class RecordSaveDataXYZ {
     public void saveEarthquakeData(String authority,int samplesPerSecond)
     {
         Date currentTime = Calendar.getInstance().getTime();
-        String fileName=(currentTime.getYear()+1900)+"-"+currentTime.getMonth()+"-"+currentTime.getDate()+"-"+currentTime.getHours()+currentTime.getMinutes()+"-"+currentTime.getSeconds()+".csv";
+        String fileName=(currentTime.getYear()+1900)+"-"+(currentTime.getMonth()+1)+"-"+currentTime.getDate()+"-"+currentTime.getHours()+currentTime.getMinutes()+"-"+currentTime.getSeconds()+".csv";
         File myDir = new File("storage/emulated/0/Samples");
         if(!myDir.exists())
         {

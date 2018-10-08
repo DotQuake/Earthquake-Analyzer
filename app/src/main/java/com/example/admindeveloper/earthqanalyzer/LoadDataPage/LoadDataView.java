@@ -42,25 +42,21 @@ public class LoadDataView extends Fragment implements SensorEventListener
     float compassDegree;
     public final int FILE_REQUEST_CODE=0;
     public LineChart rawDataGraph;
-    public TextView hypocenterBox;
-    public TextView directionBox;
-    TextView statusText;
+    //TextView statusText;
     DisplayGraph dG=new DisplayGraph();
     EarthquakeAnalyzer ea;
-    public void displayHypocenterBox(float distance)
+   /* public void displayHypocenterBox(float distance)
     {
         hypocenterBox.setText("Hypocenter: "+distance);
     }
-    public void displayDirectionBox(float degree)
+    public void displayDirectionBox(String degree)
     {
-        String where=null;
-        where = cpc.getDirection(degree);
-        directionBox.setText("Direction: "+where);
+        directionBox.setText("Direction: "+degree);
     }
     public void displayStatus(String text)
     {
         statusText.setText(text);
-    }
+    }*/
     public void openDocumentOpener(View view){
             Intent intent = new Intent(view.getContext(), FilePickerActivity.class);
             intent.putExtra(FilePickerActivity.CONFIGS, new Configurations.Builder()
@@ -85,13 +81,10 @@ public class LoadDataView extends Fragment implements SensorEventListener
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.loaddata,container,false);
-        hypocenterBox=myView.findViewById(R.id.hypocenter);
-        directionBox=myView.findViewById(R.id.direction);
         loadDatabtn =  myView.findViewById(R.id.loadButton);
         rawDataGraph=myView.findViewById(R.id.rawDataChart);
         cpc = new CompassPageController();
         dG.setup(rawDataGraph);
-        statusText=myView.findViewById(R.id.status);
         ea=new EarthquakeAnalyzer((float)0.3,150 ,(float)0.1 );
         loadDatabtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,35 +109,22 @@ public class LoadDataView extends Fragment implements SensorEventListener
                 if(file.getMediaType()==MediaFile.TYPE_FILE)
                 {
                     LoadDataController ld=new LoadDataController();
-                    if(ld.initializeData((float)0.2,(int)compassDegree,file))
+                    if(ld.initializeData(file,0.3F,50,0.1F))
                     {
-                        EarthQuakeDataClass earthQuakeData=ld.getEarthQuakeData();
-                        for(int count=0;count<earthQuakeData.getEHZ().size();count++) {
-                            String result=ea.detectEarthquake(earthQuakeData.getEHE().get(count),earthQuakeData.getEHN().get(count) ,earthQuakeData.getEHZ().get(count) );
-                            if(ea.getStatus()=="EARTHQUAKEDETECTED")
-                            {
-                                String[] values=result.split(",");
-                                Float startX = Float.parseFloat(values[0]);
-                                Float startY = Float.parseFloat(values[1]);
-                                Float startZ = Float.parseFloat(values[2]);
-                                Integer seconds = Integer.parseInt(values[3]);
-                                displayStatus("EARTHQUAKE DETECTED! \r\n" + startX + "\r\n" + startY + "\r\n" + startZ + "\r\n" + seconds);
-                            }
-                            else
-                            {
-                                displayStatus("NO EARTHQUAKE");
-                            }
-                            dG.displayRawDataGraph(earthQuakeData.getEHE().get(count),earthQuakeData.getEHN().get(count),earthQuakeData.getEHZ().get(count),rawDataGraph);
-                        }
-                        displayHypocenterBox(ld.getHypocenter());
-                        displayDirectionBox(ld.getDirection());
+                        //displayHypocenterBox(ld.getHypocenter());
+                        //displayDirectionBox(ld.getDirection());
                     }
                     else
                     {
-                        this.hypocenterBox.setText(null);
-                        this.directionBox.setText(null);
+                        //this.hypocenterBox.setText(null);
+                        //this.directionBox.setText(null);
                     }
-
+                   // statusText.setText(ld.getStatus());
+                    EarthQuakeDataClass earthQuakeData=ld.getEarthQuakeData();
+                    for(int count=0;count<earthQuakeData.getEHE().size();count++)
+                    {
+                        dG.displayRawDataGraph(earthQuakeData.getEHE().get(count), earthQuakeData.getEHN().get(count), earthQuakeData.getEHZ().get(count), rawDataGraph);
+                    }
                 }
                 break;
             }

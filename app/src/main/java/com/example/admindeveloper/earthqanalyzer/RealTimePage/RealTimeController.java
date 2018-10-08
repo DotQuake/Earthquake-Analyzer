@@ -16,6 +16,7 @@ public class RealTimeController {
     private EarthquakeAnalyzer ea=null;
     private RecordSaveDataXYZ rsdata=new RecordSaveDataXYZ();
     private boolean recordStarted=false;
+    private boolean earthquakeDetected=false;
 
     public String getDirection(){return this.direction;}
     public float getHypocenter(){return this.hypocenter;}
@@ -59,9 +60,8 @@ public class RealTimeController {
     /*public float getCompassData(){
         return cpc.getDegree();
     }*/
-    public void recordEarthquake()
-    {
-        if(ea!=null) {
+    public void recordEarthquake() {
+        if (ea != null) {
             if (ea.getStatus() == "PWTHRESHOLDEXCEED" && !recordStarted) {
                 ArrayList<Float> xList = ea.getListX();
                 ArrayList<Float> yList = ea.getListY();
@@ -71,8 +71,9 @@ public class RealTimeController {
                 }
                 recordStarted = true;
             }
-            if (ea.getStatus() == "FINISH"&&recordStarted) {
+            if (ea.getStatus() == "FINISH" && recordStarted) {
                 recordStarted = false;
+                earthquakeDetected = true;
                 rsdata.saveEarthquakeData("Unknown", 40);
                 rsdata.clearData();
             }
@@ -80,6 +81,7 @@ public class RealTimeController {
                 rsdata.recordData(this.x, this.y, this.z);
             }
             //rsdata.recordData(this.x,this.y , this.z);
+
         }
     }
     public String getStatus()
@@ -101,7 +103,7 @@ public class RealTimeController {
                     Float startZ = Float.parseFloat(values[2]);
                     Integer seconds = Integer.parseInt(values[3]);
                     this.calculateHypocenter((float) seconds);
-                    direction=cpc2.getDirection(cpc2.calculateDirection(startX,startY,startZ,0,cpc2.getDegree()));
+                    direction=cpc2.calculateDirection(startX,startY,startZ,0.3F,0)+"\r\n"+startX+"\r\n"+startY+"\r\n"+startZ;
                     return true;
                 }
             }

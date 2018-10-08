@@ -16,8 +16,30 @@ public class CompassPageController {
 
     public float calculateDirection(float x, float y,float z ,float threshold,float degree) {
 // From the phone's point of view
-        degree = Math.round(degree);
-        if (z > threshold) {
+        double angle=0;
+        try
+        {
+            angle=Math.atan(y/x)*(360/2*Math.PI);
+            if(angle/360>0)
+            {
+                angle=angle%360;
+            }
+            if(x<0&&y<0)
+            {
+                angle+=180;
+            }
+            if(angle<0)
+            {
+                angle+=360;
+            }
+        }
+        catch (Exception e)
+        {
+            angle=90;
+        }
+        return (float) angle;
+        /*degree = Math.round(degree);
+        if (z < threshold) {
 
 
             if (x < -threshold && y < -threshold) {// pushed to SOUTHWEST
@@ -58,7 +80,7 @@ public class CompassPageController {
                 return (degree - 180);}
 
         }
-        return 90;
+        return 90;*/
     }
     public String getDirection(float d){
         String where = "NO";

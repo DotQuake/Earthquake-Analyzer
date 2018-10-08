@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.example.admindeveloper.earthqanalyzer.CompassPage.CompassPageController;
 import com.example.admindeveloper.earthqanalyzer.CompassPage.CompassPageView;
 import com.example.admindeveloper.earthqanalyzer.DisplayGraph;
+import com.example.admindeveloper.earthqanalyzer.MediaRescan;
 import com.example.admindeveloper.earthqanalyzer.R;
 import com.example.admindeveloper.earthqanalyzer.RecordSaveDataXYZ;
 import com.github.mikephil.charting.charts.LineChart;
@@ -72,8 +73,7 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         rsdata.saveEarthquakeData("unknown",100);
         MediaScannerConnection.scanFile(getActivity(), new String[] {Environment.getExternalStorageDirectory().getPath()+"/Samples"}, null, null);
         Toast.makeText(getActivity(),"Saved",Toast.LENGTH_SHORT).show();
-        File myDir = new File(Environment.getExternalStorageDirectory()+"/SoftEng");
-        getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(myDir)));
+        MediaRescan mr=new MediaRescan();
     }
     public void recordDataBtnClick(){
         if(recordflag){
@@ -118,7 +118,9 @@ public class RealTimeView extends Fragment implements SensorEventListener {
             status.setText(rtc.getStatus());
             if(rtc.updateXYZ(event.values[0],event.values[1],event.values[2],cpc))
             {
-                status.append("\r\n"+rtc.getHypocenter()+"\r\n"+rtc.getDirection());
+               // status.append("\r\n"+rtc.getHypocenter()+"\r\n"+rtc.getDirection());
+                this.hypocenterBox.setText(rtc.getHypocenter()+"");
+                this.directionBox.setText(rtc.getDirection());
             }
                if (recordflag) {
                    rsdata.recordData(rtc.getX(), rtc.getY(), rtc.getZ());
@@ -159,15 +161,19 @@ public class RealTimeView extends Fragment implements SensorEventListener {
         recordDataBtn = (Button) myView.findViewById(R.id.recordbt);
         saveDataBtn = (Button) myView.findViewById(R.id.savebt);
         rtc = new RealTimeController();
-        rtc.initializeAnalyzer(0.3F, 50, 0.1F);
+        rtc.initializeAnalyzer(0.3F, 100, 0.1F);
         dg = new DisplayGraph();
         rsdata = new RecordSaveDataXYZ();
+        hypocenterBox.setText("");
+        directionBox.setText("");
         status=myView.findViewById(R.id.statustx);
         restartBtn=myView.findViewById(R.id.restart);
         restartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                rtc.initializeAnalyzer(0.3F,50 ,0.1F );
+                hypocenterBox.setText("");
+                directionBox.setText("");
+                rtc.initializeAnalyzer(0.3F,100 ,0.1F );
             }
         });
         recordDataBtn.setOnClickListener(new View.OnClickListener() {

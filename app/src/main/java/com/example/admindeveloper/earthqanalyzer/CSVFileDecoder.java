@@ -37,6 +37,7 @@ public class CSVFileDecoder {
             BufferedReader bfr = new BufferedReader(new InputStreamReader(fis));
             String line=null;
             String[] decodeString=null;
+            /*
             while((line=bfr.readLine())!=null&&!flagDone)
             {
                 decodeString=line.split(",");
@@ -55,6 +56,7 @@ public class CSVFileDecoder {
                 {
                     flagStartInitialization=false;
                     flagStartOfSamples=true;
+
                 }
                 if(flagStartInitialization)
                 {
@@ -121,7 +123,21 @@ public class CSVFileDecoder {
                     flagStartInitialization=true;
                 }
 
+            }*/
+            try
+            {
+            int count=0;
+            while ((line = bfr.readLine()) != null && count<25) {
+                count++;
             }
+                while ((line = bfr.readLine()) != null) {
+                    decodeString=line.split(",");
+                    EHE.add(Float.parseFloat(decodeString[0]));
+                    EHN.add(Float.parseFloat(decodeString[1]));
+                    EHZ.add(Float.parseFloat(decodeString[2]));
+                }
+            }
+            catch(Exception e){}
             fis.close();
         }
         catch(FileNotFoundException e)

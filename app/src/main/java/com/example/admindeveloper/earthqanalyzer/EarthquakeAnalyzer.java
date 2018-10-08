@@ -53,6 +53,8 @@ public class EarthquakeAnalyzer{
         z=new ArrayList<>();
         status="DETERMINEPW";
         startSampling=false;
+        this.startDate=null;
+        this.endDate=null;
     }
     public void startDelay(){
         if(delay==null){
@@ -92,6 +94,12 @@ public class EarthquakeAnalyzer{
                     case "DETERMINEPW": {
                         determinePrimaryWave();
                         result = null;
+                        if((Math.abs(x)>PWThreshold&&Math.abs(startX)<Math.abs(x)&&Math.abs(startX)>=Math.abs(startY))||(Math.abs(y)>PWThreshold&&Math.abs(startY)<Math.abs(y)&&Math.abs(startY)>=Math.abs(startX)))
+                        {
+                            startX=x;
+                            startY=y;
+                            startZ=z;
+                        }
                         break;
                     }
                     case "PWTHRESHOLDEXCEED": {
@@ -105,7 +113,7 @@ public class EarthquakeAnalyzer{
                         break;
                     }
                     case "EARTHQUAKEDETECTED": {
-                        int seconds = endDate.getSeconds() - startDate.getSeconds();
+                        int seconds = (endDate.getMinutes()*60+endDate.getSeconds()) - (startDate.getMinutes()*60+startDate.getSeconds());
                         result = startX + "," + startY + "," + startZ + "," + seconds + ",";
                         SWonFinish();
                         break;

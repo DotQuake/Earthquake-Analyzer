@@ -71,10 +71,10 @@ public class DisplayGraph {
         rawDataGraph.getDescription().setText("Real Time Accelerometer Data Plot ( X , Y , Z )");
 
         // enable touch gestures
-        rawDataGraph.setTouchEnabled(false);
+        rawDataGraph.setTouchEnabled(true);
 
         // enable scaling and dragging
-        rawDataGraph.setDragEnabled(false);
+        rawDataGraph.setDragEnabled(true);
         rawDataGraph.setScaleEnabled(false);
         rawDataGraph.setDrawGridBackground(false);
 
