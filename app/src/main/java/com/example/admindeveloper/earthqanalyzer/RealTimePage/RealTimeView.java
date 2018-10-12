@@ -4,14 +4,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -34,7 +32,6 @@ import com.example.admindeveloper.earthqanalyzer.R;
 import com.example.admindeveloper.earthqanalyzer.RecordSaveDataXYZ;
 import com.github.mikephil.charting.charts.LineChart;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 
 public class RealTimeView extends Fragment implements SensorEventListener {

@@ -1,22 +1,9 @@
 package com.example.admindeveloper.earthqanalyzer;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
-import android.os.Environment;
-import android.support.v4.content.FileProvider;
-
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.nio.file.spi.FileSystemProvider;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,15 +14,6 @@ public class RecordSaveDataXYZ {
     private List<Float> x_values = new ArrayList<>();
     private List<Float> y_values = new ArrayList<>();
     private List<Float> z_values = new ArrayList<>();
-    public List<Float> getX_values() {
-        return x_values;
-    }
-    public List<Float> getY_values() {
-        return y_values;
-    }
-    public List<Float> getZ_values() {
-        return z_values;
-    }
     public void clearData()
     {
         x_values.clear();
@@ -88,13 +66,12 @@ public class RecordSaveDataXYZ {
             bw.write(x_values.size()+","+x_values.size()+","+x_values.size()+",#number of samples,\r\n");
             bw.write("0,0,0,#sync,\r\n");
             bw.write(",,,#sync source,\r\n");
-            bw.write("g,g,g,,\r\n");
+            bw.write("g,g,g,g,\r\n");
             bw.write("--------,--------,--------,,\r\n");
             for(int count=0;count<x_values.size();count++)
             {
                 bw.write(x_values.get(count)+","+y_values.get(count)+","+z_values.get(count)+","+count+",");
                 bw.write("\r\n");
-                //bw.newLine();
             }
             bw.write("       ,       ,       ,,\r\n" +
                     "       ,       ,       ,,\r\n" +

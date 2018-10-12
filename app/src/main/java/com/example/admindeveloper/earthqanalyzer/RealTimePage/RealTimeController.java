@@ -36,7 +36,6 @@ public class RealTimeController {
         gravity[2] = alpha * gravity[2] + (1 - alpha) * z;
         linear_acceleration[2] = z - gravity[2];
         this.z = linear_acceleration[2];
-        //recordEarthquake();
         return detectEarthquake(cpc);
     }
     public float getX() {
@@ -57,9 +56,6 @@ public class RealTimeController {
         this.hypocenter=seconds*8;
     }
 
-    /*public float getCompassData(){
-        return cpc.getDegree();
-    }*/
     public void recordEarthquake() {
         if (ea != null) {
             if (ea.getStatus() == "PWTHRESHOLDEXCEED" && !recordStarted) {
@@ -80,8 +76,6 @@ public class RealTimeController {
             if (recordStarted) {
                 rsdata.recordData(this.x, this.y, this.z);
             }
-            //rsdata.recordData(this.x,this.y , this.z);
-
         }
     }
     public String getStatus()

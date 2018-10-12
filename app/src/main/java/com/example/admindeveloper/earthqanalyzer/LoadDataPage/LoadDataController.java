@@ -6,8 +6,6 @@ import com.example.admindeveloper.earthqanalyzer.EarthQuakeDataClass;
 import com.example.admindeveloper.earthqanalyzer.EarthquakeAnalyzer;
 import com.jaiselrahman.filepicker.model.MediaFile;
 
-import java.util.ArrayList;
-
 public class LoadDataController{
 
     private float hypocenter;

@@ -22,7 +22,7 @@ import com.example.admindeveloper.earthqanalyzer.R;
 public class CompassPageView extends Fragment implements SensorEventListener {
     View myView;
     private ImageView image;
-    float degree, currentdegree = 0f;
+    float currentdegree = 0f;
     private SensorManager mSensorManager;
     TextView mcompass;
 
@@ -36,16 +36,8 @@ public class CompassPageView extends Fragment implements SensorEventListener {
     }
     private void displayDirectionText(){
         String where = "NO";
-        degree = cpc.getDegree();
-        where = cpc.getDirection(degree);
-        /*if(cpc.getComputedDegree()>degree-24&&cpc.getComputedDegree()<degree+24) {
-            mcompass.setTextColor(Color.RED);
-        }
-        else
-        {
-            mcompass.setTextColor(Color.BLACK);
-        }*/
-        mcompass.setText("Heading: " + Float.toString(degree) + "°   " + where);
+        where = cpc.getDirection();
+        mcompass.setText("Heading: " + Float.toString(cpc.getDegree()) + "°   " + where);
     }
 
 
@@ -53,8 +45,8 @@ public class CompassPageView extends Fragment implements SensorEventListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myView = inflater.inflate(R.layout.orientation,container,false);
-        mcompass = (TextView) myView.findViewById(R.id.tvcompass);
-        image = (ImageView) myView.findViewById(R.id.imview);
+        mcompass = myView.findViewById(R.id.tvcompass);
+        image = myView.findViewById(R.id.imview);
         cpc = new CompassPageController();
         return myView;
     }
@@ -72,10 +64,9 @@ public class CompassPageView extends Fragment implements SensorEventListener {
 
         if(event.sensor.getType() == Sensor.TYPE_ORIENTATION) {
             // get the angle around the z-axis rotated
-            cpc.setDegree(Math.round(event.values[0]));
+            cpc.deviceTurned(event.values[0]);
             image.startAnimation(displayAnimation(cpc.getDegree(),currentdegree,image));
             currentdegree = -cpc.getDegree();
-
             displayDirectionText();
         }
     }
