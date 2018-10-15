@@ -1,7 +1,5 @@
 package com.example.admindeveloper.earthqanalyzer;
 
-import android.os.CountDownTimer;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,38 +14,17 @@ public class RecordSaveDataXYZ {
     private List<Float> x_values = new ArrayList<>();
     private List<Float> y_values = new ArrayList<>();
     private List<Float> z_values = new ArrayList<>();
-    private CountDownTimer delay=null;
-    private boolean samplePerSecondDetermined=false;
-    private int samplePerSecond=0;
+    private int samplePerSecond=30;
     public void clearData()
     {
         x_values.clear();
         y_values.clear();
         z_values.clear();
     }
-    private void startDelay(){
-        if(delay==null){
-            delay = new CountDownTimer(1000, 200) {
-                @Override
-                public void onTick(long l) {
-                }
-
-                @Override
-                public void onFinish() {
-                    samplePerSecondDetermined = true;
-                    delay = null;
-                }
-            }.start();
-        }
-    }
     public void recordData(float x, float y, float z){
         x_values.add(x);
         y_values.add(y);
         z_values.add(z);
-        if(!samplePerSecondDetermined) {
-            startDelay();
-            samplePerSecond++;
-        }
     }
     public void saveEarthquakeData(String authority)
     {
