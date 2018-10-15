@@ -62,6 +62,7 @@ public class RecordSaveDataXYZ {
             hold=currentTime.getHours()+"";
             hold=currentTime.getMinutes()<=9?hold+"0"+currentTime.getMinutes():""+hold+currentTime.getMinutes();
             bw.write(hold+","+hold+","+hold+",#hour minute,\r\n");
+            bw.write(currentTime.getSeconds()+","+currentTime.getSeconds()+","+currentTime.getSeconds()+",#second,\r\n");
             bw.write(samplesPerSecond+","+samplesPerSecond+","+samplesPerSecond+",#samples per second,\r\n");
             bw.write(x_values.size()+","+x_values.size()+","+x_values.size()+",#number of samples,\r\n");
             bw.write("0,0,0,#sync,\r\n");

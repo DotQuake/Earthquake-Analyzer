@@ -107,12 +107,5 @@ public class EarthQuakeDataClass
         return EHZ;
     }
 
-    public void AppendData(float x, float y, float z)
-    {
-        this.EHE.add(x);
-        this.EHZ.add(z);
-        this.EHN.add(y);
-        return;
-    }
 }
 
