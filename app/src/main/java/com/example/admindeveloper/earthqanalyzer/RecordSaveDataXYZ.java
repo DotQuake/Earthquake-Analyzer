@@ -1,5 +1,7 @@
 package com.example.admindeveloper.earthqanalyzer;
 
+import android.os.CountDownTimer;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,18 +16,40 @@ public class RecordSaveDataXYZ {
     private List<Float> x_values = new ArrayList<>();
     private List<Float> y_values = new ArrayList<>();
     private List<Float> z_values = new ArrayList<>();
+    private CountDownTimer delay=null;
+    private boolean samplePerSecondDetermined=false;
+    private int samplePerSecond=0;
     public void clearData()
     {
         x_values.clear();
         y_values.clear();
         z_values.clear();
     }
+    private void startDelay(){
+        if(delay==null){
+            delay = new CountDownTimer(1000, 200) {
+                @Override
+                public void onTick(long l) {
+                }
+
+                @Override
+                public void onFinish() {
+                    samplePerSecondDetermined = true;
+                    delay = null;
+                }
+            }.start();
+        }
+    }
     public void recordData(float x, float y, float z){
         x_values.add(x);
         y_values.add(y);
         z_values.add(z);
+        if(!samplePerSecondDetermined) {
+            startDelay();
+            samplePerSecond++;
+        }
     }
-    public void saveEarthquakeData(String authority,int samplesPerSecond)
+    public void saveEarthquakeData(String authority)
     {
         Date currentTime = Calendar.getInstance().getTime();
         String fileName=(currentTime.getYear()+1900)+"-"+(currentTime.getMonth()+1)+"-"+currentTime.getDate()+"-"+currentTime.getHours()+currentTime.getMinutes()+"-"+currentTime.getSeconds()+".csv";
@@ -63,7 +87,7 @@ public class RecordSaveDataXYZ {
             hold=currentTime.getMinutes()<=9?hold+"0"+currentTime.getMinutes():""+hold+currentTime.getMinutes();
             bw.write(hold+","+hold+","+hold+",#hour minute,\r\n");
             bw.write(currentTime.getSeconds()+","+currentTime.getSeconds()+","+currentTime.getSeconds()+",#second,\r\n");
-            bw.write(samplesPerSecond+","+samplesPerSecond+","+samplesPerSecond+",#samples per second,\r\n");
+            bw.write(samplePerSecond+","+samplePerSecond+","+samplePerSecond+",#samples per second,\r\n");
             bw.write(x_values.size()+","+x_values.size()+","+x_values.size()+",#number of samples,\r\n");
             bw.write("0,0,0,#sync,\r\n");
             bw.write(",,,#sync source,\r\n");

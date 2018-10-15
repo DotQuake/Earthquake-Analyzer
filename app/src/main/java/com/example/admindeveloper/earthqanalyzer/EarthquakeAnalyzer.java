@@ -203,28 +203,4 @@ public class EarthquakeAnalyzer{
         averageZ/=maxNumberOfSamples;
         return new Float[]{averageX,averageY,averageZ};
     }
-    public static float calculateHypocenter(int startTime,int endTime)
-    {
-        float hypocenter=(endTime-startTime)*4;
-        return hypocenter;
-    }
-    public static float calculateDirection(EarthQuakeDataClass data,float compassDegree,int startCount)
-    {
-        float direction=0;
-        double angle=Math.toDegrees(Math.atan(Math.abs((data.getEHN().get(startCount))/Math.abs((data.getEHE().get(startCount))))));
-        if(data.getEHE().get(startCount)>0&&data.getEHN().get(startCount)>0) {
-            direction=(float)(90-angle)+compassDegree;
-        }
-        else if(data.getEHE().get(startCount)>0&&data.getEHN().get(startCount)<0) {
-            direction=(float)(90+angle)+compassDegree;
-        }
-        else if(data.getEHE().get(startCount)<0&&data.getEHN().get(startCount)>0) {
-            direction=(float)(90-angle+180)+compassDegree;
-        }
-        else
-        {
-            direction=(float)(90-angle+270)+compassDegree;
-        }
-        return direction;
-    }
 }

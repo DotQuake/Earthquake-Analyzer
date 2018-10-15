@@ -12,11 +12,7 @@ public class LoadDataController{
     private String direction;
     private EarthQuakeDataClass data;
     private String status;
-    public LoadDataController()
-    {
-
-    }
-    public String getStatus(){return this.status;}
+    public LoadDataController(){ }
     public void calculateHypocenter(Float seconds){this.hypocenter=seconds*8;}
     public EarthQuakeDataClass getEarthQuakeData()
     {
@@ -58,13 +54,5 @@ public class LoadDataController{
             }
         }
         return false;
-    }
-    public float getHypocenter()
-    {
-        return hypocenter;
-    }
-    public String getDirection()
-    {
-        return direction;
     }
 }

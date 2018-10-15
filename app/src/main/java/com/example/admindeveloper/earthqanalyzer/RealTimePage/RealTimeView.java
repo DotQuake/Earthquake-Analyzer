@@ -40,7 +40,6 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     private ImageView image;
     float currentdegree = 0f;
 
-
     public LineChart rawDataGraph;
     public TextView hypocenterBox;
     public TextView directionBox;
@@ -67,7 +66,7 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     }
     // IMPLEMENTED -------------------------------------
     public void saveDataBtnClick(){
-        rsdata.saveEarthquakeData("unknown",100);
+        rsdata.saveEarthquakeData("unknown");
         MediaScannerConnection.scanFile(getActivity(), new String[] {Environment.getExternalStorageDirectory().getPath()+"/Samples"}, null, null);
         Toast.makeText(getActivity(),"Saved",Toast.LENGTH_SHORT).show();
         MediaRescan mr=new MediaRescan();
@@ -115,7 +114,6 @@ public class RealTimeView extends Fragment implements SensorEventListener {
             status.setText(rtc.getStatus());
             if(rtc.updateXYZ(event.values[0],event.values[1],event.values[2],cpc))
             {
-               // status.append("\r\n"+rtc.getHypocenter()+"\r\n"+rtc.getDirection());
                 this.hypocenterBox.setText(rtc.getHypocenter()+"");
                 this.directionBox.setText(rtc.getDirection());
             }
@@ -190,7 +188,6 @@ public class RealTimeView extends Fragment implements SensorEventListener {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1000);
         }
         showMessage();
-        //displayTime();
         smooththread();
         dg.setup(rawDataGraph);
         return myView;
@@ -215,7 +212,6 @@ public class RealTimeView extends Fragment implements SensorEventListener {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSensorManager = (SensorManager) this.getActivity().getSystemService(Activity.SENSOR_SERVICE);
-       // mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
     }
 

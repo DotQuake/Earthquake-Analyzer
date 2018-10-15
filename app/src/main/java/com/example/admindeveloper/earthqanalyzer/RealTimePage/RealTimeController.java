@@ -2,21 +2,15 @@ package com.example.admindeveloper.earthqanalyzer.RealTimePage;
 
 import com.example.admindeveloper.earthqanalyzer.CompassPage.CompassPageController;
 import com.example.admindeveloper.earthqanalyzer.EarthquakeAnalyzer;
-import com.example.admindeveloper.earthqanalyzer.RecordSaveDataXYZ;
-
-import java.util.ArrayList;
 
 public class RealTimeController {
-    public String direction;
-    public float hypocenter;
+    private String direction;
+    private float hypocenter;
     private final float alpha = 0.8f;
     private float[] gravity = {0,0,0};
     private float[] linear_acceleration = {0,0,0};
     private float x,y,z;
     private EarthquakeAnalyzer ea=null;
-    private RecordSaveDataXYZ rsdata=new RecordSaveDataXYZ();
-    private boolean recordStarted=false;
-    private boolean earthquakeDetected=false;
 
     public String getDirection(){return this.direction;}
     public float getHypocenter(){return this.hypocenter;}
@@ -47,36 +41,9 @@ public class RealTimeController {
     public float getZ() {
         return z;
     }
-    public void calculateHypocenter(Float seconds,Float travelSpeed)
-    {
-        this.hypocenter=seconds*travelSpeed;
-    }
     public void calculateHypocenter(Float seconds)
     {
         this.hypocenter=seconds*8;
-    }
-
-    public void recordEarthquake() {
-        if (ea != null) {
-            if (ea.getStatus() == "PWTHRESHOLDEXCEED" && !recordStarted) {
-                ArrayList<Float> xList = ea.getListX();
-                ArrayList<Float> yList = ea.getListY();
-                ArrayList<Float> zList = ea.getListZ();
-                for (int count = 0; count < xList.size(); count++) {
-                    rsdata.recordData(xList.get(count), yList.get(count), zList.get(count));
-                }
-                recordStarted = true;
-            }
-            if (ea.getStatus() == "FINISH" && recordStarted) {
-                recordStarted = false;
-                earthquakeDetected = true;
-                rsdata.saveEarthquakeData("Unknown", 40);
-                rsdata.clearData();
-            }
-            if (recordStarted) {
-                rsdata.recordData(this.x, this.y, this.z);
-            }
-        }
     }
     public String getStatus()
     {
@@ -97,7 +64,7 @@ public class RealTimeController {
                     Float startZ = Float.parseFloat(values[2]);
                     Integer seconds = Integer.parseInt(values[3]);
                     this.calculateHypocenter((float) seconds);
-                    direction=cpc2.calculateDirection(startX,startY,startZ,0.3F,0)+"\r\n"+startX+"\r\n"+startY+"\r\n"+startZ;
+                    direction=cpc2.getDirection(cpc2.calculateDirection(startX,startY,startZ,0.3F,0))+"\r\n"+startX+"\r\n"+startY+"\r\n"+startZ;
                     return true;
                 }
             }
