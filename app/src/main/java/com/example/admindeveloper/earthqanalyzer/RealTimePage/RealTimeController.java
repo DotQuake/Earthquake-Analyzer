@@ -57,7 +57,7 @@ public class RealTimeController {
         if(ea!=null) {
             String result=ea.detectEarthquake(this.x, this.y, this.z);
             try {
-                if(ea.getStatus()=="EARTHQUAKEDETECTED") {
+                if(ea.getStatus().equals("EARTHQUAKEDETECTED")) {
                     String[] values = result.split(",");
                     Float startX = Float.parseFloat(values[0]);
                     Float startY = Float.parseFloat(values[1]);
