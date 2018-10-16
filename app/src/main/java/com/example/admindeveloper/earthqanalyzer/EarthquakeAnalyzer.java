@@ -147,16 +147,6 @@ public class EarthquakeAnalyzer{
         if(values[0]<=PWThreshold&&values[1]<=PWThreshold&&values[2]<=PWThreshold)
         {
             status="DETERMINESW";
-            for(int count=0;count<this.x.size();count++)
-            {
-                if(this.x.get(count)>PWThreshold||this.y.get(count)>PWThreshold||this.z.get(count)>PWThreshold)
-                {
-                    startX=this.x.get(count);
-                    startY=this.y.get(count);
-                    startZ=this.z.get(count);
-                    count=this.x.size();
-                }
-            }
             SWThreshold=highestRecordThreshold+difference;
         }
         else {

@@ -64,7 +64,7 @@ public class RealTimeController {
                     Float startZ = Float.parseFloat(values[2]);
                     Integer seconds = Integer.parseInt(values[3]);
                     this.calculateHypocenter((float) seconds);
-                    direction=cpc2.getDirection(cpc2.calculateDirection(startX,startY,startZ,0.3F,0))+"\r\n"+startX+"\r\n"+startY+"\r\n"+startZ;
+                    direction=cpc2.getDirection(cpc2.calculateDirection(startX,startY,startZ,0.3F,cpc2.getDegree()))+"\r\n"+startX+"\r\n"+startY+"\r\n"+startZ;
                     return true;
                 }
             }
